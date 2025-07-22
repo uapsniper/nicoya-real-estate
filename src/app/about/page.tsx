@@ -161,44 +161,52 @@ export default function AboutPage() {
         </div>
 
         {/* Investment Benefits */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-xl p-8 mb-16 border border-gray-200">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
             Investment Benefits
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🌱</span>
+            <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-green-500 rounded-xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Sustainable Growth</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">Sustainable Growth</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
                 Eco-friendly development with strong environmental protections ensuring long-term value.
               </p>
             </div>
-            <div className="text-center">
-              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📈</span>
+            <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-blue-500 rounded-xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Property Appreciation</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">Property Appreciation</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
                 Consistent property value growth driven by increasing international interest and limited supply.
               </p>
             </div>
-            <div className="text-center">
-              <div className="bg-yellow-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🏖️</span>
+            <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-amber-500 rounded-xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Tourism Revenue</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">Tourism Revenue</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
                 Strong rental income potential from year-round tourism and growing eco-tourism market.
               </p>
             </div>
-            <div className="text-center">
-              <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🛡️</span>
+            <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-purple-500 rounded-xl w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Political Stability</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">Political Stability</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
                 Costa Rica&apos;s stable democracy and pro-foreign investment policies provide security.
               </p>
             </div>

@@ -21,8 +21,10 @@ const heroImages = [
 
 export default function HeroSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setIsClient(true)
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => 
         prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
@@ -31,12 +33,6 @@ export default function HeroSection() {
 
     return () => clearInterval(interval)
   }, [])
-
-  // Debug logging
-  useEffect(() => {
-    console.log('Current image index:', currentImageIndex)
-    console.log('Current image URL:', heroImages[currentImageIndex].src)
-  }, [currentImageIndex])
 
   return (
     <div className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -47,7 +43,7 @@ export default function HeroSection() {
       <div 
         className="absolute inset-0 transition-all duration-500 ease-in-out"
         style={{
-          backgroundImage: `url(${heroImages[currentImageIndex].src})`,
+          backgroundImage: isClient ? `url(${heroImages[currentImageIndex].src})` : `url(${heroImages[0].src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
