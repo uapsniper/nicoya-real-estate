@@ -53,7 +53,7 @@ export default function PropertyMap({ location, title }: PropertyMapProps) {
       ) : (
         <div className="h-96 rounded-lg overflow-hidden">
           <iframe
-            src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${searchQuery}&zoom=14`}
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${searchQuery}&zoom=14`}
             width="100%"
             height="100%"
             style={{ border: 0 }}
