@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import OptimizedImage from '@/components/OptimizedImage'
 import Link from 'next/link'
 
 export default function HeroSection() {
@@ -6,7 +6,7 @@ export default function HeroSection() {
     <div className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <Image
+        <OptimizedImage
           src="/images/nicoya-beach-hero.jpg"
           alt="Beautiful beach in Peninsula de Nicoya, Costa Rica"
           fill
