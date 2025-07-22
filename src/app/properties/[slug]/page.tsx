@@ -10,9 +10,9 @@ import RelatedProperties from '@/components/RelatedProperties'
 import { MapPinIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline'
 
 interface PropertyPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 async function getProperty(slug: string) {
@@ -35,7 +35,8 @@ async function getProperty(slug: string) {
 }
 
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
-  const property = await getProperty(params.slug)
+  const resolvedParams = await params
+  const property = await getProperty(resolvedParams.slug)
 
   if (!property) {
     return {
@@ -74,7 +75,8 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
 }
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
-  const property = await getProperty(params.slug)
+  const resolvedParams = await params
+  const property = await getProperty(resolvedParams.slug)
 
   if (!property) {
     notFound()
