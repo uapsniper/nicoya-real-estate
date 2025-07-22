@@ -32,7 +32,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
             Properties in Peninsula de Nicoya
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl">
-            Discover your perfect property in Costa Rica's most beautiful coastal region. 
+            Browse our exclusive collection of properties in Costa Rica&apos;s most beautiful coastal region. 
             From beachfront villas to jungle retreats, find your slice of paradise.
           </p>
         </div>

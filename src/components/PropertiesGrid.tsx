@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import PropertyCard from './PropertyCard'
 import Pagination from './Pagination'
+import Link from 'next/link'
 
 interface PropertiesGridProps {
   searchParams: {
@@ -103,12 +104,12 @@ export default async function PropertiesGrid({ searchParams }: PropertiesGridPro
         <p className="text-gray-600 mb-6">
           Try adjusting your search criteria or browse all available properties.
         </p>
-        <a
+        <Link
           href="/properties"
           className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200"
         >
           View All Properties
-        </a>
+        </Link>
       </div>
     )
   }

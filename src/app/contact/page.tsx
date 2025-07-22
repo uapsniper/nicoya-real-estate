@@ -126,8 +126,8 @@ export default function ContactPage() {
             <div className="bg-white rounded-lg shadow-md p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Send Us a Message</h2>
               <p className="text-gray-600 mb-8">
-                Whether you're looking to buy, sell, or invest in Peninsula de Nicoya real estate, 
-                we're here to help. Fill out the form below and we'll get back to you within 24 hours.
+                Whether you&apos;re looking to buy, sell, or invest in Peninsula de Nicoya real estate, 
+                we&apos;re here to help. Fill out the form below and we&apos;ll get back to you within 24 hours.
               </p>
               <ContactForm />
             </div>
