@@ -16,7 +16,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
-              Discover paradise in Costa Rica's Peninsula de Nicoya. We specialize in 
+              Discover paradise in Costa Rica&apos;s Peninsula de Nicoya. We specialize in 
               luxury properties, beachfront homes, and investment opportunities in 
               Cabuya, Montezuma, and Mal País.
             </p>

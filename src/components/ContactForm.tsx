@@ -81,7 +81,7 @@ export default function ContactForm() {
             <p className="text-green-800 font-medium">Thank you for your message!</p>
           </div>
           <p className="text-green-700 text-sm mt-1">
-            We've received your inquiry and will get back to you within 24 hours.
+            We&apos;ve received your inquiry and will get back to you within 24 hours.
           </p>
         </div>
       )}

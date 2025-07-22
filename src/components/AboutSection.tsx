@@ -12,8 +12,8 @@ export default function AboutSection() {
               Why Choose Peninsula de Nicoya?
             </h2>
             <p className="text-lg text-gray-700 mb-6">
-              The Peninsula de Nicoya is Costa Rica's hidden gem, offering pristine beaches, 
-              lush tropical forests, and a laid-back lifestyle that's perfect for both 
+              The Peninsula de Nicoya is Costa Rica&apos;s hidden gem, offering pristine beaches, 
+              lush tropical forests, and a laid-back lifestyle that&apos;s perfect for both 
               permanent residence and investment opportunities.
             </p>
             
@@ -26,7 +26,7 @@ export default function AboutSection() {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-lg font-semibold text-gray-900">World-Class Beaches</h3>
-                  <p className="text-gray-600">Access to some of Costa Rica's most beautiful and pristine beaches</p>
+                  <p className="text-gray-600">Access to some of Costa Rica&apos;s most beautiful and pristine beaches</p>
                 </div>
               </div>
               

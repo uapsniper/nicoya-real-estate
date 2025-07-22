@@ -77,7 +77,7 @@ export default function InquiryForm({ propertyId, propertyTitle }: InquiryFormPr
             <p className="text-green-800 font-medium">Message sent successfully!</p>
           </div>
           <p className="text-green-700 text-sm mt-1">
-            We'll get back to you within 24 hours.
+            We&apos;ll get back to you within 24 hours.
           </p>
         </div>
       )}
