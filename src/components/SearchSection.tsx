@@ -71,7 +71,7 @@ export default function SearchSection() {
             Find Your Dream Property
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Search through our exclusive collection of properties in Costa Rica's most beautiful coastal region
+            Search through our exclusive collection of properties in Costa Rica&apos;s most beautiful coastal region
           </p>
         </div>
 

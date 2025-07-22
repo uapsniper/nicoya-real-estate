@@ -28,7 +28,7 @@ export default function AboutPage() {
               About Peninsula de Nicoya
             </h1>
             <p className="text-xl sm:text-2xl max-w-2xl">
-              Discover Costa Rica's hidden gem for real estate investment and tropical living
+              Discover Costa Rica&apos;s hidden gem for real estate investment and tropical living
             </p>
           </div>
         </div>
@@ -42,7 +42,7 @@ export default function AboutPage() {
               Why Peninsula de Nicoya?
             </h2>
             <p className="text-lg text-gray-700 mb-6">
-              The Peninsula de Nicoya represents one of Costa Rica's most pristine and promising regions for 
+              The Peninsula de Nicoya represents one of Costa Rica&apos;s most pristine and promising regions for 
               real estate investment. Located on the Pacific coast, this stunning peninsula offers a unique 
               combination of natural beauty, growing infrastructure, and investment potential that attracts 
               discerning buyers from around the world.
