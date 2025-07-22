@@ -115,7 +115,7 @@ export default async function AdminDashboard() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome to your admin dashboard. Here's an overview of your real estate listings.</p>
+        <p className="text-gray-600 mt-2">Welcome to your admin dashboard. Here&apos;s an overview of your real estate listings.</p>
       </div>
 
       {/* Stats Cards */}

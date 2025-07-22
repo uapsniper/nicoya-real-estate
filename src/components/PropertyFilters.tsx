@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 interface PropertyFiltersProps {

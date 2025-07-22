@@ -199,7 +199,7 @@ export default function AboutPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Political Stability</h3>
               <p className="text-gray-600 text-sm">
-                Costa Rica's stable democracy and pro-foreign investment policies provide security.
+                Costa Rica&apos;s stable democracy and pro-foreign investment policies provide security.
               </p>
             </div>
           </div>

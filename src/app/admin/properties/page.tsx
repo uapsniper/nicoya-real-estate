@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { formatPrice, formatArea } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
-import { PencilIcon, TrashIcon, PlusIcon, EyeIcon } from '@heroicons/react/24/outline'
+import { PencilIcon, EyeIcon, PlusIcon } from '@heroicons/react/24/outline'
 import DeletePropertyButton from '@/components/admin/DeletePropertyButton'
 
 async function getProperties() {

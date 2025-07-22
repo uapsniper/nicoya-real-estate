@@ -7,7 +7,7 @@ import PropertyGallery from '@/components/PropertyGallery'
 import PropertyMap from '@/components/PropertyMap'
 import InquiryForm from '@/components/InquiryForm'
 import RelatedProperties from '@/components/RelatedProperties'
-import { MapPinIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline'
+import { MapPinIcon, HomeIcon, CalendarIcon } from '@heroicons/react/24/outline'
 
 interface PropertyPageProps {
   params: Promise<{
