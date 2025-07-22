@@ -1,10 +1,13 @@
 import { Suspense } from 'react'
+import { getFeaturedPropertiesWithImages } from '@/lib/property-service'
 import HeroSection from '@/components/HeroSection'
 import FeaturedProperties from '@/components/FeaturedProperties'
 import SearchSection from '@/components/SearchSection'
 import AboutSection from '@/components/AboutSection'
 
-export default function Home() {
+export default async function Home() {
+  const featuredProperties = await getFeaturedPropertiesWithImages(6)
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

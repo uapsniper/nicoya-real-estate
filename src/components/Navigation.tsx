@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import Image from 'next/image'
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -20,12 +21,14 @@ export default function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-blue-600">
-                Nicoya Coast
-              </span>
-              <span className="ml-2 text-sm text-green-600 font-medium">
-                Real Estate
-              </span>
+              <Image
+                src="/images/Nicoya Coastal Homes.svg"
+                alt="Nicoya Coast Real Estate"
+                width={240}
+                height={60}
+                className="h-14 w-auto"
+                priority
+              />
             </Link>
           </div>
 

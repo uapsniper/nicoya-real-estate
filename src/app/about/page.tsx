@@ -15,7 +15,7 @@ export default function AboutPage() {
       <div className="relative h-96 bg-gradient-to-r from-blue-600 to-green-600">
         <div className="absolute inset-0">
           <Image
-            src="/images/nicoya-peninsula-aerial.jpg"
+            src="https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/44.png"
             alt="Aerial view of Peninsula de Nicoya coastline"
             fill
             className="object-cover opacity-30"
@@ -64,7 +64,7 @@ export default function AboutPage() {
           <div className="mt-8 lg:mt-0">
             <div className="relative h-96 rounded-2xl overflow-hidden shadow-xl">
               <Image
-                src="/images/nicoya-beach-sunset.jpg"
+                src="https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/33.png"
                 alt="Beautiful sunset over Nicoya Peninsula beach"
                 fill
                 className="object-cover"
@@ -84,7 +84,7 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="relative h-48">
                 <Image
-                  src="/images/cabuya-beach.jpg"
+                  src="https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/cabuya.jpg"
                   alt="Cabuya beach and coastline"
                   fill
                   className="object-cover"
@@ -110,7 +110,7 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="relative h-48">
                 <Image
-                  src="/images/montezuma-waterfall.jpg"
+                  src="https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/Montezuma.webp"
                   alt="Montezuma waterfall and tropical landscape"
                   fill
                   className="object-cover"
@@ -136,7 +136,7 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="relative h-48">
                 <Image
-                  src="/images/mal-pais-surf.jpg"
+                  src="https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/mal-pais.jpg"
                   alt="Mal País surf break and coastline"
                   fill
                   className="object-cover"

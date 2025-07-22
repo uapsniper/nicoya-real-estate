@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import OptimizedImage from '@/components/OptimizedImage'
+import Image from 'next/image'
 import { Property } from '@/lib/supabase'
 import { formatPrice, formatArea, truncateText } from '@/lib/utils'
 import { MapPinIcon, HomeIcon, BanknotesIcon } from '@heroicons/react/24/outline'
@@ -20,8 +20,8 @@ export default function PropertyCard({ property, featured = false }: PropertyCar
         <div className="relative">
           {/* Property Image */}
           <div className="relative h-48 sm:h-56 md:h-48 lg:h-56">
-            <OptimizedImage
-              src={property.images[0] || '/images/placeholder-property.jpg'}
+            <Image
+              src={property.images[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80'}
               alt={property.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"

@@ -1,21 +1,62 @@
-import OptimizedImage from '@/components/OptimizedImage'
+'use client'
+
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 
+const heroImages = [
+  {
+    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/1.png',
+    alt: 'Beautiful Costa Rica beachfront property'
+  },
+  {
+    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/2.png',
+    alt: 'Luxury villa in Peninsula de Nicoya'
+  },
+  {
+    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/3.png',
+    alt: 'Oceanview property in Costa Rica'
+  }
+]
+
 export default function HeroSection() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+      )
+    }, 10000) // Change image every 10 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Current image index:', currentImageIndex)
+    console.log('Current image URL:', heroImages[currentImageIndex].src)
+  }, [currentImageIndex])
+
   return (
     <div className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <OptimizedImage
-          src="/images/nicoya-beach-hero.jpg"
-          alt="Beautiful beach in Peninsula de Nicoya, Costa Rica"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-      </div>
+      {/* Colored gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-blue-600"></div>
+      
+      {/* Background image overlay with reduced opacity */}
+      <div 
+        className="absolute inset-0 transition-all duration-500 ease-in-out"
+        style={{
+          backgroundImage: `url(${heroImages[currentImageIndex].src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.3
+        }}
+      ></div>
+      
+      {/* Additional subtle overlay for better text contrast */}
+      <div className="absolute inset-0 bg-black/20"></div>
 
       {/* Hero Content */}
       <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
@@ -47,20 +88,32 @@ export default function HeroSection() {
 
         {/* Key Features */}
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
-          <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6">
-            <div className="text-3xl mb-2">🏖️</div>
-            <h3 className="text-lg font-semibold mb-2">Beachfront Properties</h3>
-            <p className="text-gray-200 text-sm">Direct access to pristine beaches and crystal-clear waters</p>
+          <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-6 hover:bg-white/25 transition-all duration-300">
+            <div className="w-12 h-12 mx-auto mb-4 bg-blue-500 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold mb-2 text-white">Beachfront Properties</h3>
+            <p className="text-gray-100 text-sm leading-relaxed">Direct access to pristine beaches and crystal-clear waters</p>
           </div>
-          <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6">
-            <div className="text-3xl mb-2">🌿</div>
-            <h3 className="text-lg font-semibold mb-2">Nature Reserves</h3>
-            <p className="text-gray-200 text-sm">Close to Cabo Blanco and Manuel Antonio National Parks</p>
+          <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-6 hover:bg-white/25 transition-all duration-300">
+            <div className="w-12 h-12 mx-auto mb-4 bg-green-500 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold mb-2 text-white">Nature Reserves</h3>
+            <p className="text-gray-100 text-sm leading-relaxed">Close to Cabo Blanco and Manuel Antonio National Parks</p>
           </div>
-          <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6">
-            <div className="text-3xl mb-2">💰</div>
-            <h3 className="text-lg font-semibold mb-2">Investment Potential</h3>
-            <p className="text-gray-200 text-sm">High-growth market with excellent rental opportunities</p>
+          <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-6 hover:bg-white/25 transition-all duration-300">
+            <div className="w-12 h-12 mx-auto mb-4 bg-amber-500 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold mb-2 text-white">Investment Potential</h3>
+            <p className="text-gray-100 text-sm leading-relaxed">High-growth market with excellent rental opportunities</p>
           </div>
         </div>
       </div>

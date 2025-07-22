@@ -82,7 +82,7 @@ export default function AboutSection() {
           <div className="relative">
             <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/images/nicoya-nature.jpg"
+                src="https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/22.png"
                 alt="Beautiful nature scene in Peninsula de Nicoya"
                 fill
                 className="object-cover"

@@ -1,9 +1,15 @@
 import Link from 'next/link'
-import { getFeaturedPropertiesWithImages } from '@/lib/property-service'
+import { supabase, Property } from '@/lib/supabase'
 import PropertyCard from './PropertyCard'
 
 export default async function FeaturedProperties() {
-  const properties = await getFeaturedPropertiesWithImages(6)
+  // Fetch featured properties directly from database
+  const { data: properties } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('featured', true)
+    .order('created_at', { ascending: false })
+    .limit(6)
 
   return (
     <section className="py-16 bg-white">
@@ -17,7 +23,7 @@ export default async function FeaturedProperties() {
           </p>
         </div>
 
-        {properties.length > 0 ? (
+        {properties && properties.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {properties.map((property) => (

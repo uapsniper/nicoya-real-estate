@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { getPropertyBySlugWithImages, getRelatedPropertiesWithImages } from '@/lib/property-service'
+import { supabase, Property } from '@/lib/supabase'
 import { formatPrice, formatArea } from '@/lib/utils'
 import PropertyGallery from '@/components/PropertyGallery'
 import PropertyMap from '@/components/PropertyMap'
@@ -16,7 +16,13 @@ interface PropertyPageProps {
 }
 
 async function getProperty(slug: string) {
-  return await getPropertyBySlugWithImages(slug)
+  const { data: property } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+  
+  return property
 }
 
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
