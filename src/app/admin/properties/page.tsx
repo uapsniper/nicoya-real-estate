@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getPropertiesWithImages } from '@/lib/property-service'
 import { formatPrice, formatArea } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -6,22 +6,7 @@ import { PencilIcon, EyeIcon, PlusIcon } from '@heroicons/react/24/outline'
 import DeletePropertyButton from '@/components/admin/DeletePropertyButton'
 
 async function getProperties() {
-  try {
-    const { data: properties, error } = await supabase
-      .from('properties')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching properties:', error)
-      return []
-    }
-
-    return properties || []
-  } catch (error) {
-    console.error('Error fetching properties:', error)
-    return []
-  }
+  return await getPropertiesWithImages()
 }
 
 export default async function AdminPropertiesPage() {

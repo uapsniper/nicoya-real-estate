@@ -1,30 +1,9 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { getFeaturedPropertiesWithImages } from '@/lib/property-service'
 import PropertyCard from './PropertyCard'
 
-async function getFeaturedProperties() {
-  try {
-    const { data: properties, error } = await supabase
-      .from('properties')
-      .select('*')
-      .eq('featured', true)
-      .order('created_at', { ascending: false })
-      .limit(6)
-
-    if (error) {
-      console.error('Error fetching featured properties:', error)
-      return []
-    }
-
-    return properties || []
-  } catch (error) {
-    console.error('Error fetching featured properties:', error)
-    return []
-  }
-}
-
 export default async function FeaturedProperties() {
-  const properties = await getFeaturedProperties()
+  const properties = await getFeaturedPropertiesWithImages(6)
 
   return (
     <section className="py-16 bg-white">
