@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 interface PropertiesPageProps {
-  searchParams: {
+  searchParams: Promise<{
     location?: string
     type?: string
     minPrice?: string
@@ -18,10 +18,11 @@ interface PropertiesPageProps {
     bedrooms?: string
     page?: string
     sort?: string
-  }
+  }>
 }
 
-export default function PropertiesPage({ searchParams }: PropertiesPageProps) {
+export default async function PropertiesPage({ searchParams }: PropertiesPageProps) {
+  const resolvedSearchParams = await searchParams
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -42,7 +43,7 @@ export default function PropertiesPage({ searchParams }: PropertiesPageProps) {
           {/* Filters Sidebar */}
           <div className="lg:col-span-1 mb-8 lg:mb-0">
             <div className="sticky top-24">
-              <PropertyFilters searchParams={searchParams} />
+              <PropertyFilters searchParams={resolvedSearchParams} />
             </div>
           </div>
 
@@ -67,7 +68,7 @@ export default function PropertiesPage({ searchParams }: PropertiesPageProps) {
                 </div>
               </div>
             }>
-              <PropertiesGrid searchParams={searchParams} />
+              <PropertiesGrid searchParams={resolvedSearchParams} />
             </Suspense>
           </div>
         </div>
