@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 interface PropertyGalleryProps {
@@ -11,6 +10,13 @@ interface PropertyGalleryProps {
 
 export default function PropertyGallery({ images, title }: PropertyGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
+  
+  // Debug logging
+  console.log('PropertyGallery rendered with:', {
+    title,
+    imagesCount: images?.length || 0,
+    images: images
+  })
 
   const openLightbox = (index: number) => {
     setSelectedImage(index)
@@ -32,17 +38,13 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
     }
   }
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  // Handle keyboard events inline
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (selectedImage !== null) {
       if (e.key === 'Escape') closeLightbox()
       if (e.key === 'ArrowLeft') goToPrevious()
       if (e.key === 'ArrowRight') goToNext()
     }
-  }
-
-  // Add keyboard event listeners
-  if (typeof window !== 'undefined') {
-    window.addEventListener('keydown', handleKeyDown)
   }
 
   return (
@@ -54,37 +56,34 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
         {images.map((image, index) => (
           <div
             key={index}
-            className="relative aspect-square cursor-pointer group overflow-hidden rounded-lg"
+            className="cursor-pointer rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-colors"
             onClick={() => openLightbox(index)}
+            style={{ height: '200px' }}
           >
-            <Image
+            <img
               src={image}
               alt={`${title} - Image ${index + 1}`}
-              fill
-              className="object-cover transition-transform duration-200 group-hover:scale-105"
-              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+              style={{ display: 'block' }}
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200 flex items-center justify-center">
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                </svg>
-              </div>
-            </div>
           </div>
         ))}
       </div>
 
       {/* Lightbox Modal */}
       {selectedImage !== null && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+        >
           <div className="relative max-w-7xl max-h-full">
             {/* Close Button */}
             <button
               onClick={closeLightbox}
-              className="absolute top-4 right-4 z-10 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity"
+              className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
             >
-              <XMarkIcon className="h-6 w-6" />
+              <XMarkIcon className="h-8 w-8" />
             </button>
 
             {/* Previous Button */}
@@ -104,14 +103,17 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
             </button>
 
             {/* Main Image */}
-            <div className="relative w-full h-full max-w-4xl max-h-[80vh]">
-              <Image
+            <div className="relative w-full h-full max-w-4xl max-h-[80vh] flex items-center justify-center">
+              <img
                 src={images[selectedImage]}
                 alt={`${title} - Image ${selectedImage + 1}`}
-                fill
-                className="object-contain"
-                sizes="90vw"
-                priority
+                className="max-w-full max-h-full object-contain"
+                onLoad={() => console.log('Lightbox image loaded:', images[selectedImage])}
+                onError={(e) => {
+                  console.error('Lightbox image failed:', images[selectedImage])
+                  const target = e.target as HTMLImageElement
+                  target.src = 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80'
+                }}
               />
             </div>
 

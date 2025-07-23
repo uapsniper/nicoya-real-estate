@@ -1,12 +1,13 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import { supabase, Property } from '@/lib/supabase'
 import { formatPrice, formatArea } from '@/lib/utils'
 import PropertyGallery from '@/components/PropertyGallery'
 import PropertyMap from '@/components/PropertyMap'
 import InquiryForm from '@/components/InquiryForm'
+import OptimizedImage from '@/components/OptimizedImage'
 import RelatedProperties from '@/components/RelatedProperties'
+import PropertyHeroImage from '@/components/PropertyHeroImage'
 import { MapPinIcon, HomeIcon, CalendarIcon } from '@heroicons/react/24/outline'
 
 interface PropertyPageProps {
@@ -114,15 +115,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <div className="min-h-screen bg-gray-50">
         {/* Hero Image */}
         <div className="relative h-96 md:h-[500px]">
-          <Image
-            src={property.images[0] || '/images/placeholder-property.jpg'}
-            alt={property.title}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+          {property.images && property.images.length > 0 ? (
+            <PropertyHeroImage 
+              imageUrl={property.images[0]} 
+              title={property.title} 
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500 text-lg">No image available</span>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30"></div>
           <div className="absolute bottom-6 left-6 right-6">
             <div className="bg-white bg-opacity-90 backdrop-blur-sm rounded-lg p-4">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -149,26 +152,40 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 
                 {/* Key Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <HomeIcon className="h-8 w-8 mx-auto text-blue-600 mb-2" />
+                  <div className="text-center p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 hover:shadow-lg transition-all duration-300">
+                    <div className="w-12 h-12 mx-auto mb-3 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <HomeIcon className="h-6 w-6 text-white" />
+                    </div>
                     <div className="text-2xl font-bold text-gray-900">{property.bedrooms}</div>
-                    <div className="text-sm text-gray-600">Bedrooms</div>
+                    <div className="text-sm font-medium text-gray-700">Bedrooms</div>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900 mb-2">🚿</div>
+                  <div className="text-center p-5 bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl border border-cyan-200 hover:shadow-lg transition-all duration-300">
+                    <div className="w-12 h-12 mx-auto mb-3 bg-cyan-500 rounded-lg flex items-center justify-center">
+                      <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                      </svg>
+                    </div>
                     <div className="text-2xl font-bold text-gray-900">{property.bathrooms}</div>
-                    <div className="text-sm text-gray-600">Bathrooms</div>
+                    <div className="text-sm font-medium text-gray-700">Bathrooms</div>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900 mb-2">📐</div>
+                  <div className="text-center p-5 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200 hover:shadow-lg transition-all duration-300">
+                    <div className="w-12 h-12 mx-auto mb-3 bg-green-500 rounded-lg flex items-center justify-center">
+                      <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                      </svg>
+                    </div>
                     <div className="text-2xl font-bold text-gray-900">{formatArea(property.lot_size)}</div>
-                    <div className="text-sm text-gray-600">Lot Size</div>
+                    <div className="text-sm font-medium text-gray-700">Lot Size</div>
                   </div>
                   {property.construction_size && (
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-gray-900 mb-2">🏠</div>
+                    <div className="text-center p-5 bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl border border-amber-200 hover:shadow-lg transition-all duration-300">
+                      <div className="w-12 h-12 mx-auto mb-3 bg-amber-500 rounded-lg flex items-center justify-center">
+                        <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
                       <div className="text-2xl font-bold text-gray-900">{formatArea(property.construction_size)}</div>
-                      <div className="text-sm text-gray-600">Built Area</div>
+                      <div className="text-sm font-medium text-gray-700">Built Area</div>
                     </div>
                   )}
                 </div>
@@ -211,7 +228,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </div>
 
               {/* Image Gallery */}
-              {property.images && property.images.length > 1 && (
+              {property.images && property.images.length > 0 && (
                 <PropertyGallery images={property.images} title={property.title} />
               )}
 
