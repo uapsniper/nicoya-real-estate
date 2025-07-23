@@ -43,12 +43,7 @@ export default function Navigation() {
                 {item.name}
               </Link>
             ))}
-            <Link
-              href="/admin"
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
-            >
-              Admin
-            </Link>
+
           </div>
 
           {/* Mobile menu button */}
@@ -80,13 +75,7 @@ export default function Navigation() {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                href="/admin"
-                className="bg-blue-600 text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 mt-4"
-                onClick={() => setIsOpen(false)}
-              >
-                Admin
-              </Link>
+
             </div>
           </div>
         )}

@@ -6,15 +6,15 @@ import Link from 'next/link'
 
 const heroImages = [
   {
-    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/1.png',
+    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/77.png',
     alt: 'Beautiful Costa Rica beachfront property'
   },
   {
-    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/2.png',
+    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/66.png',
     alt: 'Luxury villa in Peninsula de Nicoya'
   },
   {
-    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/3.png',
+    src: 'https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/44.png',
     alt: 'Oceanview property in Costa Rica'
   }
 ]
@@ -36,47 +36,42 @@ export default function HeroSection() {
 
   return (
     <div className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Colored gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-blue-600"></div>
-      
-      {/* Background image overlay with reduced opacity */}
+      {/* Full opacity background image */}
       <div 
         className="absolute inset-0 transition-all duration-500 ease-in-out"
         style={{
           backgroundImage: isClient ? `url(${heroImages[currentImageIndex].src})` : `url(${heroImages[0].src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.3
+          backgroundRepeat: 'no-repeat'
         }}
       ></div>
-      
-      {/* Additional subtle overlay for better text contrast */}
-      <div className="absolute inset-0 bg-black/20"></div>
 
       {/* Hero Content */}
-      <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
-          Discover Paradise in{' '}
-          <span className="text-blue-400">Nicoya Coast</span>,{' '}
-          <span className="text-green-400">Costa Rica</span>
-        </h1>
-        
-        <p className="text-xl sm:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
-          Luxury beachfront properties, oceanview lots, and investment opportunities 
-          in the pristine Peninsula de Nicoya
-        </p>
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 sm:p-12">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
+            Discover Paradise in{' '}
+            <span className="text-blue-300 drop-shadow-lg">Nicoya Coast</span>,{' '}
+            <span className="text-green-300 drop-shadow-lg">Costa Rica</span>
+          </h1>
+          
+          <p className="text-xl sm:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto drop-shadow-lg">
+            Luxury beachfront properties, oceanview lots, and investment opportunities 
+            in the pristine Peninsula de Nicoya
+          </p>
+        </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
           <Link
             href="/properties"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-2xl hover:shadow-3xl transform hover:scale-105"
           >
             Browse Properties
           </Link>
           <Link
             href="/contact"
-            className="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200"
+            className="bg-white/20 backdrop-blur-sm border-2 border-white/50 hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-2xl hover:shadow-3xl transform hover:scale-105"
           >
             Contact Us
           </Link>
@@ -84,7 +79,7 @@ export default function HeroSection() {
 
         {/* Key Features */}
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
-          <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-6 hover:bg-white/25 transition-all duration-300">
+          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 hover:bg-black/50 transition-all duration-300">
             <div className="w-12 h-12 mx-auto mb-4 bg-blue-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -93,7 +88,7 @@ export default function HeroSection() {
             <h3 className="text-lg font-bold mb-2 text-white">Beachfront Properties</h3>
             <p className="text-gray-100 text-sm leading-relaxed">Direct access to pristine beaches and crystal-clear waters</p>
           </div>
-          <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-6 hover:bg-white/25 transition-all duration-300">
+          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 hover:bg-black/50 transition-all duration-300">
             <div className="w-12 h-12 mx-auto mb-4 bg-green-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -102,7 +97,7 @@ export default function HeroSection() {
             <h3 className="text-lg font-bold mb-2 text-white">Nature Reserves</h3>
             <p className="text-gray-100 text-sm leading-relaxed">Close to Cabo Blanco and Manuel Antonio National Parks</p>
           </div>
-          <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-6 hover:bg-white/25 transition-all duration-300">
+          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 hover:bg-black/50 transition-all duration-300">
             <div className="w-12 h-12 mx-auto mb-4 bg-amber-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
