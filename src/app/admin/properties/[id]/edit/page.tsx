@@ -3,9 +3,9 @@ import { getPropertyWithImages } from '@/lib/property-service'
 import EditPropertyForm from '@/components/admin/EditPropertyForm'
 
 interface EditPropertyPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 async function getProperty(id: string) {
@@ -19,7 +19,8 @@ async function getProperty(id: string) {
 }
 
 export default async function EditPropertyPage({ params }: EditPropertyPageProps) {
-  const property = await getProperty(params.id)
+  const { id } = await params
+  const property = await getProperty(id)
 
   if (!property) {
     notFound()
