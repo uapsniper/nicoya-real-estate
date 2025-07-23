@@ -22,7 +22,7 @@ export default function Navigation() {
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
               <Image
-                src="/images/Nicoya Coastal Homes.svg"
+                src="https://radndwvoaogfbncoevxt.supabase.co/storage/v1/object/public/property-images/hero-images/Nicoya%20Coastal%20Homes.svg"
                 alt="Nicoya Coast Real Estate"
                 width={240}
                 height={60}
