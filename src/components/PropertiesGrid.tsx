@@ -1,4 +1,3 @@
-import { supabase } from '@/lib/supabase'
 import { getPropertiesWithImages } from '@/lib/property-service'
 import PropertyCard from './PropertyCard'
 import Pagination from './Pagination'

@@ -6,7 +6,8 @@ import { PencilIcon, EyeIcon, PlusIcon } from '@heroicons/react/24/outline'
 import DeletePropertyButton from '@/components/admin/DeletePropertyButton'
 
 async function getProperties() {
-  return await getPropertiesWithImages()
+  const result = await getPropertiesWithImages()
+  return result.properties
 }
 
 export default async function AdminPropertiesPage() {
