@@ -171,6 +171,28 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
     try {
       console.log('Starting property submission...')
       
+      // Wrap the entire operation in a timeout to prevent infinite hanging
+      await Promise.race([
+        performPropertySubmission(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Property submission timed out after 30 seconds')), 30000)
+        )
+      ])
+
+    } catch (error) {
+      console.error('Error saving property:', error)
+      setSubmitStatus('error')
+      // Show a more specific error message
+      if (error instanceof Error) {
+        console.error('Error details:', error.message)
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const performPropertySubmission = async () => {
+      
       if (!supabase) {
         throw new Error('Database connection not available')
       }
@@ -219,18 +241,25 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
 
       if (isEditing && property) {
         console.log('Updating existing property:', property.id)
-        // Update existing property
-        const { error: updateError } = await supabase
+        // Update existing property with response verification
+        const { data: updatedProperty, error: updateError } = await supabase
           .from('properties')
           .update(propertyData)
           .eq('id', property.id)
+          .select('id')
+          .single()
         
         if (updateError) {
           console.error('Update error:', updateError)
-          throw updateError
+          throw new Error(`Failed to update property: ${updateError.message}`)
         }
+        
+        if (!updatedProperty) {
+          throw new Error('Property update returned no data - property may not exist')
+        }
+        
         propertyId = property.id
-        console.log('Property updated successfully')
+        console.log('Property updated successfully, ID:', updatedProperty.id)
       } else {
         console.log('Creating new property...')
         // Create new property
@@ -270,17 +299,28 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
 
         // Also add to property_images table for API consistency
         if (uploadedImageUrls.length > 0) {
-          const imageServiceResult = await PropertyImagesService.addPropertyImages(
-            propertyId, 
-            uploadedImageUrls, 
-            false // Don't update property record since we already did it above
-          )
-          
-          if (!imageServiceResult.success) {
-            console.error('Error adding to property_images table:', imageServiceResult.error)
-            // Don't throw, just log
-          } else {
-            console.log('Property images records created successfully')
+          console.log('Adding images to property_images table...')
+          try {
+            const imageServiceResult = await Promise.race([
+              PropertyImagesService.addPropertyImages(
+                propertyId, 
+                uploadedImageUrls, 
+                false // Don't update property record since we already did it above
+              ),
+              new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Image service timeout')), 10000)
+              )
+            ]) as { success: boolean; error?: string }
+            
+            if (!imageServiceResult.success) {
+              console.error('Error adding to property_images table:', imageServiceResult.error)
+              // Don't throw, just log - this is not critical for the main update
+            } else {
+              console.log('Property images records created successfully')
+            }
+          } catch (error) {
+            console.error('Image service operation timed out or failed:', error)
+            // Continue anyway - this is not critical for the main property update
           }
         }
       }
@@ -292,17 +332,6 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
       setTimeout(() => {
         router.push('/admin/properties')
       }, 1500)
-
-    } catch (error) {
-      console.error('Error saving property:', error)
-      setSubmitStatus('error')
-      // Show a more specific error message
-      if (error instanceof Error) {
-        console.error('Error details:', error.message)
-      }
-    } finally {
-      setIsSubmitting(false)
-    }
   }
 
   return (
