@@ -1,8 +1,19 @@
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
 # Disallow admin pages
 Disallow: /admin/
+
+# Allow important pages for search engines
+Allow: /properties/
+Allow: /about
+Allow: /contact
+
+# Block sensitive files
+Disallow: /api/
+Disallow: /_next/
+Disallow: /node_modules/
 
 # Sitemap
 Sitemap: https://nicoyacoast.com/sitemap.xml

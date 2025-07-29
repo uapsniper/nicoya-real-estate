@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 interface PropertiesGridProps {
   searchParams: {
+    query?: string
     location?: string
     type?: string
     minPrice?: string
@@ -27,6 +28,11 @@ async function getProperties(searchParams: PropertiesGridProps['searchParams']) 
       .select('*', { count: 'exact' })
 
     // Apply filters
+    // Text search across multiple fields
+    if (searchParams.query) {
+      query = query.or(`title.ilike.%${searchParams.query}%,description.ilike.%${searchParams.query}%,location.ilike.%${searchParams.query}%`)
+    }
+
     if (searchParams.location) {
       query = query.ilike('location', `%${searchParams.location}%`)
     }
@@ -121,9 +127,15 @@ export default async function PropertiesGrid({ searchParams }: PropertiesGridPro
         <div>
           <h2 className="text-xl font-semibold text-gray-900">
             {total} {total === 1 ? 'Property' : 'Properties'} Found
+            {searchParams.query && (
+              <span className="text-blue-600"> for &ldquo;{searchParams.query}&rdquo;</span>
+            )}
           </h2>
           <p className="text-gray-600 mt-1">
             Page {page} of {totalPages}
+            {(searchParams.location || searchParams.minPrice || searchParams.maxPrice || searchParams.bedrooms) && (
+              <span className="ml-2">• Filters applied</span>
+            )}
           </p>
         </div>
       </div>

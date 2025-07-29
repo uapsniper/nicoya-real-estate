@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { useAuth } from '@/components/auth/AuthProvider'
+import LogoutButton from '@/components/auth/LogoutButton'
 import { 
   HomeIcon, 
   BuildingOfficeIcon, 
@@ -11,12 +13,13 @@ import {
   ChartBarIcon,
   Bars3Icon,
   XMarkIcon,
-  ArrowLeftOnRectangleIcon
+  UserIcon
 } from '@heroicons/react/24/outline'
 
 export default function AdminNavigation() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { user, profile, loading } = useAuth()
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: ChartBarIcon },
@@ -59,21 +62,31 @@ export default function AdminNavigation() {
             </div>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
+            {/* User Info */}
+            {!loading && user && (
+              <div className="hidden sm:flex items-center text-sm text-gray-600">
+                <UserIcon className="h-4 w-4 mr-2" />
+                <span className="mr-2">{profile?.full_name || user.email}</span>
+                {profile?.role && (
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                    {profile.role}
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Back to Site */}
             <Link
               href="/"
-              className="hidden sm:inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 mr-4"
+              className="hidden sm:inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
               <HomeIcon className="h-4 w-4 mr-2" />
               Back to Site
             </Link>
 
             {/* Logout */}
-            <button className="hidden sm:inline-flex items-center px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700">
-              <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
-              Logout
-            </button>
+            <LogoutButton className="hidden sm:inline-flex items-center px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700" />
 
             {/* Mobile menu button */}
             <div className="sm:hidden">
@@ -126,12 +139,9 @@ export default function AdminNavigation() {
                     Back to Site
                   </div>
                 </Link>
-                <button className="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50">
-                  <div className="flex items-center">
-                    <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
-                    Logout
-                  </div>
-                </button>
+                <div className="pl-3 pr-4 py-2">
+                  <LogoutButton className="flex items-center text-base font-medium text-red-600 hover:text-red-800" />
+                </div>
               </div>
             </div>
           </div>

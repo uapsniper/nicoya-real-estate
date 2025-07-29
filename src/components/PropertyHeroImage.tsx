@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 interface PropertyHeroImageProps {
   imageUrl: string
   title: string
@@ -7,11 +9,13 @@ interface PropertyHeroImageProps {
 
 export default function PropertyHeroImage({ imageUrl, title }: PropertyHeroImageProps) {
   return (
-    <img
+    <Image
       src={imageUrl}
       alt={title}
-      className="w-full h-full object-cover"
-      style={{ display: 'block' }}
+      fill
+      className="object-cover"
+      priority
+      sizes="100vw"
     />
   )
 }

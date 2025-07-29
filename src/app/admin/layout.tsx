@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 import AdminNavigation from '@/components/admin/AdminNavigation'
+import AuthProvider from '@/components/auth/AuthProvider'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard - Nicoya Coast Real Estate',
@@ -16,11 +18,15 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <AdminNavigation />
-      <main className="py-6">
-        {children}
-      </main>
-    </div>
+    <ErrorBoundary>
+      <AuthProvider>
+        <div className="min-h-screen bg-gray-100">
+          <AdminNavigation />
+          <main className="py-6">
+            {children}
+          </main>
+        </div>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }

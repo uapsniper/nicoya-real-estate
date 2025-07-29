@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 
 interface PropertiesPageProps {
   searchParams: Promise<{
+    query?: string
     location?: string
     type?: string
     minPrice?: string

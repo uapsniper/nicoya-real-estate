@@ -66,7 +66,7 @@ export default function OptimizedImage({
   }
 
   if (fill) {
-    return <Image {...imageProps} fill />
+    return <Image {...imageProps} fill alt={alt} />
   }
 
   return (
@@ -74,6 +74,7 @@ export default function OptimizedImage({
       {...imageProps} 
       width={width || 600} 
       height={height || 400}
+      alt={alt}
     />
   )
 }

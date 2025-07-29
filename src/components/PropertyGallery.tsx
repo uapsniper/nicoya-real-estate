@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 interface PropertyGalleryProps {
@@ -56,15 +57,15 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
         {images.map((image, index) => (
           <div
             key={index}
-            className="cursor-pointer rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-colors"
+            className="cursor-pointer rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-colors relative h-48"
             onClick={() => openLightbox(index)}
-            style={{ height: '200px' }}
           >
-            <img
+            <Image
               src={image}
               alt={`${title} - Image ${index + 1}`}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-              style={{ display: 'block' }}
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-200"
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           </div>
         ))}
@@ -104,15 +105,15 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
 
             {/* Main Image */}
             <div className="relative w-full h-full max-w-4xl max-h-[80vh] flex items-center justify-center">
-              <img
+              <Image
                 src={images[selectedImage]}
                 alt={`${title} - Image ${selectedImage + 1}`}
+                width={1200}
+                height={800}
                 className="max-w-full max-h-full object-contain"
                 onLoad={() => console.log('Lightbox image loaded:', images[selectedImage])}
-                onError={(e) => {
+                onError={() => {
                   console.error('Lightbox image failed:', images[selectedImage])
-                  const target = e.target as HTMLImageElement
-                  target.src = 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80'
                 }}
               />
             </div>

@@ -1,20 +1,32 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { supabase } from '@/lib/supabase'
+import { contactFormSchema, type ContactFormData } from '@/lib/validation-schemas'
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
 
 export default function ContactForm() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-    inquiryType: 'general'
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    setError
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      subject: '',
+      message: '',
+      inquiryType: 'general'
+    }
+  })
 
   const inquiryTypes = [
     { value: 'general', label: 'General Inquiry' },
@@ -25,9 +37,7 @@ export default function ContactForm() {
     { value: 'other', label: 'Other' }
   ]
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const onSubmit = async (data: ContactFormData) => {
     setSubmitStatus('idle')
 
     try {
@@ -35,9 +45,9 @@ export default function ContactForm() {
         .from('contact_inquiries')
         .insert([
           {
-            name: formData.name,
-            email: formData.email,
-            message: `Subject: ${formData.subject}\n\nInquiry Type: ${formData.inquiryType}\n\nPhone: ${formData.phone || 'Not provided'}\n\nMessage:\n${formData.message}`
+            name: data.name,
+            email: data.email,
+            message: `Subject: ${data.subject}\n\nInquiry Type: ${data.inquiryType}\n\nPhone: ${data.phone || 'Not provided'}\n\nMessage:\n${data.message}`
           }
         ])
 
@@ -46,28 +56,17 @@ export default function ContactForm() {
       }
 
       setSubmitStatus('success')
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        inquiryType: 'general'
-      })
+      reset()
     } catch (error) {
       console.error('Error submitting contact form:', error)
       setSubmitStatus('error')
-    } finally {
-      setIsSubmitting(false)
+      
+      // Set a generic error if no specific field errors
+      setError('root', {
+        type: 'server',
+        message: 'Failed to send message. Please try again or contact us directly.'
+      })
     }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
   }
 
   return (
@@ -100,7 +99,7 @@ export default function ContactForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -109,13 +108,15 @@ export default function ContactForm() {
             <input
               type="text"
               id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              {...register('name')}
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
               placeholder="Your full name"
             />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+            )}
           </div>
 
           <div>
@@ -125,13 +126,15 @@ export default function ContactForm() {
             <input
               type="email"
               id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              {...register('email')}
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
               placeholder="your.email@example.com"
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            )}
           </div>
         </div>
 
@@ -143,12 +146,15 @@ export default function ContactForm() {
             <input
               type="tel"
               id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              {...register('phone')}
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
               placeholder="+1 (555) 123-4567"
             />
+            {errors.phone && (
+              <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+            )}
           </div>
 
           <div>
@@ -157,11 +163,10 @@ export default function ContactForm() {
             </label>
             <select
               id="inquiryType"
-              name="inquiryType"
-              value={formData.inquiryType}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              {...register('inquiryType')}
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.inquiryType ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
             >
               {inquiryTypes.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -169,6 +174,9 @@ export default function ContactForm() {
                 </option>
               ))}
             </select>
+            {errors.inquiryType && (
+              <p className="mt-1 text-sm text-red-600">{errors.inquiryType.message}</p>
+            )}
           </div>
         </div>
 
@@ -179,13 +187,15 @@ export default function ContactForm() {
           <input
             type="text"
             id="subject"
-            name="subject"
-            value={formData.subject}
-            onChange={handleInputChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            {...register('subject')}
+            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              errors.subject ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            }`}
             placeholder="Brief description of your inquiry"
           />
+          {errors.subject && (
+            <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
+          )}
         </div>
 
         <div>
@@ -194,15 +204,29 @@ export default function ContactForm() {
           </label>
           <textarea
             id="message"
-            name="message"
-            value={formData.message}
-            onChange={handleInputChange}
-            required
+            {...register('message')}
             rows={6}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical ${
+              errors.message ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            }`}
             placeholder="Please provide details about your inquiry, including any specific requirements or questions you may have..."
           />
+          {errors.message && (
+            <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
+          )}
         </div>
+
+        {errors.root && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-800 font-medium">Submission Error</p>
+            </div>
+            <p className="text-red-700 text-sm mt-1">{errors.root.message}</p>
+          </div>
+        )}
 
         <div className="bg-gray-50 p-4 rounded-lg">
           <p className="text-sm text-gray-600">

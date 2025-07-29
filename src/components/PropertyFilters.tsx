@@ -1,11 +1,12 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
-import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useState, useCallback, useEffect } from 'react'
+import { FunnelIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 interface PropertyFiltersProps {
   searchParams: {
+    query?: string
     location?: string
     type?: string
     minPrice?: string
@@ -21,6 +22,7 @@ export default function PropertyFilters({ searchParams }: PropertyFiltersProps) 
   const currentSearchParams = useSearchParams()
   
   const [filters, setFilters] = useState({
+    query: searchParams.query || '',
     location: searchParams.location || '',
     type: searchParams.type || '',
     minPrice: searchParams.minPrice || '',
@@ -28,6 +30,8 @@ export default function PropertyFilters({ searchParams }: PropertyFiltersProps) 
     bedrooms: searchParams.bedrooms || '',
     sort: searchParams.sort || 'newest'
   })
+  
+  const [searchQuery, setSearchQuery] = useState(searchParams.query || '')
 
   const locations = [
     { value: '', label: 'All Locations' },
@@ -62,6 +66,61 @@ export default function PropertyFilters({ searchParams }: PropertyFiltersProps) 
     { value: 'bedrooms', label: 'Most Bedrooms' }
   ]
 
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    () => debounce((query: string) => {
+      const newFilters = { ...filters, query }
+      setFilters(newFilters)
+      
+      const params = new URLSearchParams(currentSearchParams)
+      if (query.trim()) {
+        params.set('query', query.trim())
+      } else {
+        params.delete('query')
+      }
+      
+      // Reset to first page when search changes
+      params.delete('page')
+      router.push(`/properties?${params.toString()}`)
+    }, 500),
+    [filters, currentSearchParams, router]
+  )()
+
+  // Handle search input changes
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    debouncedSearch(value)
+  }
+
+  // Cleanup debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel?.()
+    }
+  }, [debouncedSearch])
+
+// Simple debounce function
+function debounce<T extends (...args: never[]) => unknown>(
+  func: T,
+  wait: number
+): T & { cancel: () => void } {
+  let timeout: NodeJS.Timeout | null = null
+  
+  const debounced = ((...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }) as T & { cancel: () => void }
+  
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+  }
+  
+  return debounced
+}
+
   const applyFilters = () => {
     const params = new URLSearchParams()
     
@@ -83,6 +142,7 @@ export default function PropertyFilters({ searchParams }: PropertyFiltersProps) 
 
   const clearFilters = () => {
     setFilters({
+      query: '',
       location: '',
       type: '',
       minPrice: '',
@@ -90,6 +150,7 @@ export default function PropertyFilters({ searchParams }: PropertyFiltersProps) 
       bedrooms: '',
       sort: 'newest'
     })
+    setSearchQuery('')
     router.push('/properties')
   }
 
@@ -114,6 +175,28 @@ export default function PropertyFilters({ searchParams }: PropertyFiltersProps) 
       </div>
 
       <div className="space-y-6">
+        {/* Search */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Search Properties
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Search by title, description, or location..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+          </div>
+          {searchQuery && (
+            <p className="mt-1 text-xs text-gray-500">
+              Searching for: &ldquo;{searchQuery}&rdquo;
+            </p>
+          )}
+        </div>
+
         {/* Sort */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">

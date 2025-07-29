@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { BuildingOfficeIcon, EnvelopeIcon, EyeIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import AdminProtection from '@/components/auth/AdminProtection'
 
 async function getDashboardStats() {
   try {
@@ -112,7 +113,8 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <AdminProtection>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600 mt-2">Welcome to your admin dashboard. Here&apos;s an overview of your real estate listings.</p>
@@ -297,6 +299,7 @@ export default async function AdminDashboard() {
           </Link>
         </div>
       </div>
-    </div>
+      </div>
+    </AdminProtection>
   )
 }
