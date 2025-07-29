@@ -8,6 +8,10 @@ interface RelatedPropertiesProps {
 }
 
 async function getRelatedProperties(currentPropertyId: string, location: string) {
+  if (!supabase) {
+    return []
+  }
+
   try {
     // Extract the main location (first part before comma)
     const mainLocation = location.split(',')[0].trim()

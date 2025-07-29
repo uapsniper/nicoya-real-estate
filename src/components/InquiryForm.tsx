@@ -23,6 +23,12 @@ export default function InquiryForm({ propertyId, propertyTitle }: InquiryFormPr
     setIsSubmitting(true)
     setSubmitStatus('idle')
 
+    if (!supabase) {
+      setSubmitStatus('error')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('contact_inquiries')

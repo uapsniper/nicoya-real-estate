@@ -138,6 +138,10 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
 
       let error
 
+      if (!supabase) {
+        throw new Error('Database connection not available')
+      }
+
       if (isEditing && property) {
         const { error: updateError } = await supabase
           .from('properties')

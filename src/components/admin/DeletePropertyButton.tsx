@@ -18,6 +18,10 @@ export default function DeletePropertyButton({ propertyId, propertyTitle }: Dele
   const handleDelete = async () => {
     setIsDeleting(true)
     
+    if (!supabase) {
+      throw new Error('Database connection not available')
+    }
+
     try {
       const { error } = await supabase
         .from('properties')

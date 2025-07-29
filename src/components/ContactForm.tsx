@@ -40,6 +40,12 @@ export default function ContactForm() {
   const onSubmit = async (data: ContactFormData) => {
     setSubmitStatus('idle')
 
+    if (!supabase) {
+      setSubmitStatus('error')
+      setError('root', { message: 'Database connection not available' })
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('contact_inquiries')

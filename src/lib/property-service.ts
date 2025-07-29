@@ -11,6 +11,10 @@ import { getPropertyImageUrls } from './supabase-storage'
  * @returns Property with populated image URLs from Storage
  */
 export async function getPropertyWithImages(id: string): Promise<Property | null> {
+  if (!supabase) {
+    return null
+  }
+
   try {
     // Fetch property from database
     const { data: property, error } = await supabase
@@ -55,6 +59,10 @@ export async function getPropertiesWithImages(options: {
   propertyType?: string
   featured?: boolean
 } = {}): Promise<Property[]> {
+  if (!supabase) {
+    return []
+  }
+
   try {
     let query = supabase
       .from('properties')
