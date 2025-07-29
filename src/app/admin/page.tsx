@@ -79,6 +79,11 @@ export default function AdminDashboard() {
   }, [isAdmin])
 
   async function fetchDashboardStats(): Promise<DashboardStats | null> {
+    if (!supabase) {
+      console.error('Supabase client not available')
+      return null
+    }
+
     try {
       // Get total properties count
       const { count: totalProperties, error: totalError } = await supabase
@@ -138,6 +143,11 @@ export default function AdminDashboard() {
   }
 
   async function fetchRecentProperties(): Promise<Property[] | null> {
+    if (!supabase) {
+      console.error('Supabase client not available')
+      return null
+    }
+
     try {
       const { data: properties, error } = await supabase
         .from('properties')
@@ -154,6 +164,11 @@ export default function AdminDashboard() {
   }
 
   async function fetchRecentInquiries(): Promise<Inquiry[] | null> {
+    if (!supabase) {
+      console.error('Supabase client not available')
+      return null
+    }
+
     try {
       const { data: inquiries, error } = await supabase
         .from('contact_inquiries')
