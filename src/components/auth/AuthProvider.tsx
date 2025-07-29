@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
 import { createClientAuth, type AuthState, type UserProfile, isAdminUser } from '@/lib/supabase-auth'
 
@@ -30,7 +30,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   const supabase = createClientAuth()
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = useCallback(async (userId: string) => {
     try {
       const { data: profile, error } = await supabase
         .from('user_profiles')
@@ -65,7 +65,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('Error in fetchUserProfile:', error)
     }
-  }
+  }, [supabase, user])
 
   useEffect(() => {
     // Get initial session

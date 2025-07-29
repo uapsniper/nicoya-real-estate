@@ -1,5 +1,5 @@
 import { supabase, Property } from './supabase'
-import { getPropertyImageUrls, listPropertyImages } from './supabase-storage'
+import { getPropertyImageUrls } from './supabase-storage'
 
 /**
  * Enhanced property service that integrates with Supabase Storage

@@ -1,4 +1,4 @@
-import { supabase, Property } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import PropertyCard from './PropertyCard'
 import Pagination from './Pagination'
 import Link from 'next/link'

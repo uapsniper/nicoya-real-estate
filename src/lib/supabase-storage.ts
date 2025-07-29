@@ -72,7 +72,7 @@ export async function uploadPropertyImage(
     const finalFileName = fileName || `${Date.now()}-${file.name}`
     const filePath = `${propertyId}/${finalFileName}`
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(STORAGE_BUCKET)
       .upload(filePath, file, {
         cacheControl: '3600',
@@ -174,8 +174,8 @@ function isImageFile(fileName: string): boolean {
 export function getPropertyImageThumbnail(
   propertyId: string, 
   imageName: string, 
-  width: number = 400, 
-  height: number = 300
+  /* width: number = 400, */
+  /* height: number = 300 */
 ): string {
   // For now, return the regular image URL
   // In the future, you can implement image transformations if Supabase supports them

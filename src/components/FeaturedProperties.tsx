@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { supabase, Property } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import PropertyCard from './PropertyCard'
 
 export default async function FeaturedProperties() {

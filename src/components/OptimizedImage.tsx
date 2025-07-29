@@ -27,7 +27,6 @@ export default function OptimizedImage({
 }: OptimizedImageProps) {
   const [imgSrc, setImgSrc] = useState(src)
   const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
 
   // Handle local image paths by converting them to placeholder URLs
   const getImageSrc = (originalSrc: string) => {
@@ -43,13 +42,11 @@ export default function OptimizedImage({
   }
 
   const handleError = () => {
-    setHasError(true)
     setIsLoading(false)
     // Fallback to placeholder image
     const fallbackSrc = getPlaceholderImage('placeholder-property.jpg')
     if (imgSrc !== fallbackSrc) {
       setImgSrc(fallbackSrc)
-      setHasError(false)
     }
   }
 

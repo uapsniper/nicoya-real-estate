@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { getPropertiesWithImages } from '@/lib/property-service'
 import { Metadata } from 'next'
 import PropertiesGrid from '@/components/PropertiesGrid'
 import PropertyFilters from '@/components/PropertyFilters'
