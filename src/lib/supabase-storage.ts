@@ -10,6 +10,10 @@ export const STORAGE_BUCKET = 'property-images'
  * @returns Public URL for the image
  */
 export function getPropertyImageUrl(propertyId: string, imageName: string): string {
+  if (!supabase) {
+    return ''
+  }
+  
   const { data } = supabase.storage
     .from(STORAGE_BUCKET)
     .getPublicUrl(`${propertyId}/${imageName}`)
@@ -23,6 +27,10 @@ export function getPropertyImageUrl(propertyId: string, imageName: string): stri
  * @returns Array of image file names
  */
 export async function listPropertyImages(propertyId: string): Promise<string[]> {
+  if (!supabase) {
+    return []
+  }
+  
   try {
     const { data, error } = await supabase.storage
       .from(STORAGE_BUCKET)
@@ -68,6 +76,10 @@ export async function uploadPropertyImage(
   file: File, 
   fileName?: string
 ): Promise<{ success: boolean; url?: string; error?: string }> {
+  if (!supabase) {
+    return { success: false, error: 'Supabase client not available' }
+  }
+
   try {
     const finalFileName = fileName || `${Date.now()}-${file.name}`
     const filePath = `${propertyId}/${finalFileName}`
@@ -102,6 +114,10 @@ export async function deletePropertyImage(
   propertyId: string, 
   imageName: string
 ): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) {
+    return { success: false, error: 'Supabase client not available' }
+  }
+
   try {
     const filePath = `${propertyId}/${imageName}`
 
@@ -127,6 +143,10 @@ export async function deletePropertyImage(
  * @returns Deletion result
  */
 export async function deleteAllPropertyImages(propertyId: string): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) {
+    return { success: false, error: 'Supabase client not available' }
+  }
+
   try {
     const imageNames = await listPropertyImages(propertyId)
     

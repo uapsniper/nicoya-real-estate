@@ -16,6 +16,10 @@ interface PropertyPageProps {
 }
 
 async function getProperty(slug: string) {
+  if (!supabase) {
+    return null
+  }
+  
   const { data: property } = await supabase
     .from('properties')
     .select('*')

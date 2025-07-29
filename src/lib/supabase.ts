@@ -1,41 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Database } from './database.types'
 
 // Create client only if environment variables are available
-let supabase: ReturnType<typeof createClient> | null = null
+let supabase: ReturnType<typeof createClient<Database>> | null = null
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey)
+  supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
 }
 
 export { supabase }
 
 // Types for our database
-export interface Property {
-  id: string
-  title: string
-  price: number
-  location: string
-  lot_size: number
-  construction_size?: number
-  bedrooms: number
-  bathrooms: number
-  description: string
-  amenities: string[]
-  images: string[]
-  slug: string
-  featured: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface ContactInquiry {
-  id: string
-  property_id?: string
-  name: string
-  email: string
-  message: string
-  created_at: string
-}
+export type Property = Database['public']['Tables']['properties']['Row']
+export type ContactInquiry = Database['public']['Tables']['contact_inquiries']['Row']
