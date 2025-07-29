@@ -29,7 +29,7 @@ export default function TermsPage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Disclaimer</h2>
               <p className="text-gray-700 mb-4">
-                The materials on Nicoya Real Estate website are provided on an 'as is' basis. 
+                The materials on Nicoya Real Estate website are provided on an &apos;as is&apos; basis. 
                 Nicoya Real Estate makes no warranties, expressed or implied.
               </p>
             </section>
