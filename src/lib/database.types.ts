@@ -85,6 +85,7 @@ export interface Database {
           id: string
           email: string
           role: string
+          full_name: string | null
           created_at: string
           updated_at: string
         }
@@ -92,6 +93,7 @@ export interface Database {
           id: string
           email: string
           role?: string
+          full_name?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -99,8 +101,38 @@ export interface Database {
           id?: string
           email?: string
           role?: string
+          full_name?: string | null
           created_at?: string
           updated_at?: string
+        }
+      }
+      property_images: {
+        Row: {
+          id: number
+          created_at: string
+          property_id: string | null
+          image_url: string | null
+          alt_text: string | null
+          caption: string | null
+          is_primary: boolean | null
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          property_id?: string | null
+          image_url?: string | null
+          alt_text?: string | null
+          caption?: string | null
+          is_primary?: boolean | null
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          property_id?: string | null
+          image_url?: string | null
+          alt_text?: string | null
+          caption?: string | null
+          is_primary?: boolean | null
         }
       }
     }

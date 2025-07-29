@@ -1,125 +1,173 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { BuildingOfficeIcon, EnvelopeIcon, EyeIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import AdminProtection from '@/components/auth/AdminProtection'
+import { useAuth } from '@/components/auth/AuthProvider'
 
-async function getDashboardStats() {
-  if (!supabase) {
-    return {
-      totalProperties: 0,
-      featuredProperties: 0,
-      totalInquiries: 0,
-      recentInquiries: 0,
-      averagePrice: 0
-    }
-  }
-
-  try {
-    // Get total properties count
-    const { count: totalProperties } = await supabase
-      .from('properties')
-      .select('*', { count: 'exact', head: true })
-
-    // Get featured properties count
-    const { count: featuredProperties } = await supabase
-      .from('properties')
-      .select('*', { count: 'exact', head: true })
-      .eq('featured', true)
-
-    // Get total inquiries count
-    const { count: totalInquiries } = await supabase
-      .from('contact_inquiries')
-      .select('*', { count: 'exact', head: true })
-
-    // Get recent inquiries (last 7 days)
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    
-    const { count: recentInquiries } = await supabase
-      .from('contact_inquiries')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', sevenDaysAgo.toISOString())
-
-    // Get average property price
-    const { data: priceData } = await supabase
-      .from('properties')
-      .select('price')
-
-    const averagePrice = priceData && priceData.length > 0
-      ? priceData.reduce((sum, property) => sum + property.price, 0) / priceData.length
-      : 0
-
-    return {
-      totalProperties: totalProperties || 0,
-      featuredProperties: featuredProperties || 0,
-      totalInquiries: totalInquiries || 0,
-      recentInquiries: recentInquiries || 0,
-      averagePrice
-    }
-  } catch (error) {
-    console.error('Error fetching dashboard stats:', error)
-    return {
-      totalProperties: 0,
-      featuredProperties: 0,
-      totalInquiries: 0,
-      recentInquiries: 0,
-      averagePrice: 0
-    }
-  }
+interface DashboardStats {
+  totalProperties: number
+  featuredProperties: number
+  totalInquiries: number
+  recentInquiries: number
+  averagePrice: number
 }
 
-async function getRecentProperties() {
-  if (!supabase) {
-    return []
+interface Property {
+  id: string
+  title: string
+  price: number
+  location: string
+  created_at: string
+  featured: boolean
+}
+
+interface Inquiry {
+  id: string
+  name: string
+  email: string
+  created_at: string
+  property_id: string | null
+}
+
+export default function AdminDashboard() {
+  const { isAdmin } = useAuth()
+  const [stats, setStats] = useState<DashboardStats>({
+    totalProperties: 0,
+    featuredProperties: 0,
+    totalInquiries: 0,
+    recentInquiries: 0,
+    averagePrice: 0
+  })
+  const [recentProperties, setRecentProperties] = useState<Property[]>([])
+  const [recentInquiries, setRecentInquiries] = useState<Inquiry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchDashboardData() {
+      if (!supabase || !isAdmin) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        setError(null)
+        
+        // Fetch all data in parallel
+        const [statsResult, propertiesResult, inquiriesResult] = await Promise.all([
+          fetchDashboardStats(),
+          fetchRecentProperties(),
+          fetchRecentInquiries()
+        ])
+
+        if (statsResult) setStats(statsResult)
+        if (propertiesResult) setRecentProperties(propertiesResult)
+        if (inquiriesResult) setRecentInquiries(inquiriesResult)
+
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err)
+        setError('Failed to load dashboard data. Please refresh the page.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [isAdmin])
+
+  async function fetchDashboardStats(): Promise<DashboardStats | null> {
+    try {
+      // Get total properties count
+      const { count: totalProperties, error: totalError } = await supabase
+        .from('properties')
+        .select('*', { count: 'exact', head: true })
+
+      if (totalError) throw totalError
+
+      // Get featured properties count
+      const { count: featuredProperties, error: featuredError } = await supabase
+        .from('properties')
+        .select('*', { count: 'exact', head: true })
+        .eq('featured', true)
+
+      if (featuredError) throw featuredError
+
+      // Get total inquiries count
+      const { count: totalInquiries, error: inquiriesError } = await supabase
+        .from('contact_inquiries')
+        .select('*', { count: 'exact', head: true })
+
+      if (inquiriesError) throw inquiriesError
+
+      // Get recent inquiries (last 7 days)
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      
+      const { count: recentInquiries, error: recentError } = await supabase
+        .from('contact_inquiries')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', sevenDaysAgo.toISOString())
+
+      if (recentError) throw recentError
+
+      // Get average property price
+      const { data: priceData, error: priceError } = await supabase
+        .from('properties')
+        .select('price')
+
+      if (priceError) throw priceError
+
+      const averagePrice = priceData && priceData.length > 0
+        ? priceData.reduce((sum, property) => sum + property.price, 0) / priceData.length
+        : 0
+
+      return {
+        totalProperties: totalProperties || 0,
+        featuredProperties: featuredProperties || 0,
+        totalInquiries: totalInquiries || 0,
+        recentInquiries: recentInquiries || 0,
+        averagePrice
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error)
+      return null
+    }
   }
 
-  try {
-    const { data: properties, error } = await supabase
-      .from('properties')
-      .select('id, title, price, location, created_at, featured')
-      .order('created_at', { ascending: false })
-      .limit(5)
+  async function fetchRecentProperties(): Promise<Property[] | null> {
+    try {
+      const { data: properties, error } = await supabase
+        .from('properties')
+        .select('id, title, price, location, created_at, featured')
+        .order('created_at', { ascending: false })
+        .limit(5)
 
-    if (error) {
+      if (error) throw error
+      return properties || []
+    } catch (error) {
       console.error('Error fetching recent properties:', error)
-      return []
+      return null
     }
-
-    return properties || []
-  } catch (error) {
-    console.error('Error fetching recent properties:', error)
-    return []
-  }
-}
-
-async function getRecentInquiries() {
-  if (!supabase) {
-    return []
   }
 
-  try {
-    const { data: inquiries, error } = await supabase
-      .from('contact_inquiries')
-      .select('id, name, email, created_at, property_id')
-      .order('created_at', { ascending: false })
-      .limit(5)
+  async function fetchRecentInquiries(): Promise<Inquiry[] | null> {
+    try {
+      const { data: inquiries, error } = await supabase
+        .from('contact_inquiries')
+        .select('id, name, email, created_at, property_id')
+        .order('created_at', { ascending: false })
+        .limit(5)
 
-    if (error) {
+      if (error) throw error
+      return inquiries || []
+    } catch (error) {
       console.error('Error fetching recent inquiries:', error)
-      return []
+      return null
     }
-
-    return inquiries || []
-  } catch (error) {
-    console.error('Error fetching recent inquiries:', error)
-    return []
   }
-}
-
-export default async function AdminDashboard() {
-  const stats = await getDashboardStats()
-  const recentProperties = await getRecentProperties()
-  const recentInquiries = await getRecentInquiries()
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -128,6 +176,45 @@ export default async function AdminDashboard() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price)
+  }
+
+  if (loading) {
+    return (
+      <AdminProtection>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </AdminProtection>
+    )
+  }
+
+  if (error) {
+    return (
+      <AdminProtection>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mt-8">
+            <div className="flex items-center">
+              <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-800 font-medium">Error</p>
+            </div>
+            <p className="text-red-700 text-sm mt-1">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      </AdminProtection>
+    )
   }
 
   return (

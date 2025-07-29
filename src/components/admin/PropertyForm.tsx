@@ -7,6 +7,7 @@ import { generateSlug } from '@/lib/utils'
 import { Property } from '@/lib/supabase'
 import { PlusIcon, XMarkIcon, PhotoIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline'
 import { uploadMultiplePropertyImages, deletePropertyImage, validateImageFile } from '@/lib/image-upload'
+import { PropertyImagesService } from '@/lib/property-images-service'
 
 interface PropertyFormProps {
   property?: Property
@@ -168,24 +169,45 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
     setSubmitStatus('idle')
 
     try {
+      console.log('Starting property submission...')
+      
       if (!supabase) {
         throw new Error('Database connection not available')
+      }
+
+      // Validate required fields
+      if (!formData.title.trim()) {
+        throw new Error('Property title is required')
+      }
+      if (!formData.price || parseFloat(formData.price) <= 0) {
+        throw new Error('Valid price is required')
+      }
+      if (!formData.location.trim()) {
+        throw new Error('Location is required')
+      }
+      if (!formData.lot_size || parseInt(formData.lot_size) <= 0) {
+        throw new Error('Valid lot size is required')
+      }
+      if (!formData.description.trim()) {
+        throw new Error('Description is required')
       }
 
       const slug = generateSlug(formData.title)
       let propertyId = property?.id
       let uploadedImageUrls: string[] = []
 
+      console.log('Generated slug:', slug)
+
       // First, create or update the property to get an ID
       const propertyData = {
-        title: formData.title,
+        title: formData.title.trim(),
         price: parseFloat(formData.price),
-        location: formData.location,
+        location: formData.location.trim(),
         lot_size: parseInt(formData.lot_size),
         construction_size: formData.construction_size ? parseInt(formData.construction_size) : null,
         bedrooms: parseInt(formData.bedrooms),
         bathrooms: parseInt(formData.bathrooms),
-        description: formData.description,
+        description: formData.description.trim(),
         featured: formData.featured,
         amenities: formData.amenities,
         images: formData.images, // Will be updated with new images
@@ -193,16 +215,24 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
         updated_at: new Date().toISOString()
       }
 
+      console.log('Property data to submit:', propertyData)
+
       if (isEditing && property) {
+        console.log('Updating existing property:', property.id)
         // Update existing property
         const { error: updateError } = await supabase
           .from('properties')
           .update(propertyData)
           .eq('id', property.id)
         
-        if (updateError) throw updateError
+        if (updateError) {
+          console.error('Update error:', updateError)
+          throw updateError
+        }
         propertyId = property.id
+        console.log('Property updated successfully')
       } else {
+        console.log('Creating new property...')
         // Create new property
         const { data: newProperty, error: insertError } = await supabase
           .from('properties')
@@ -210,13 +240,19 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
           .select('id')
           .single()
         
-        if (insertError) throw insertError
+        if (insertError) {
+          console.error('Insert error:', insertError)
+          throw insertError
+        }
         propertyId = newProperty.id
+        console.log('New property created with ID:', propertyId)
       }
 
       // Upload new images if any are selected
       if (selectedFiles.length > 0 && propertyId) {
+        console.log(`Uploading ${selectedFiles.length} images...`)
         uploadedImageUrls = await uploadImages(propertyId)
+        console.log('Images uploaded:', uploadedImageUrls)
         
         // Update the property with the new image URLs
         const allImages = [...formData.images, ...uploadedImageUrls]
@@ -227,9 +263,29 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
         
         if (imageUpdateError) {
           console.error('Error updating images:', imageUpdateError)
+          // Don't throw here, just log the error
+        } else {
+          console.log('Property images updated successfully')
+        }
+
+        // Also add to property_images table for API consistency
+        if (uploadedImageUrls.length > 0) {
+          const imageServiceResult = await PropertyImagesService.addPropertyImages(
+            propertyId, 
+            uploadedImageUrls, 
+            false // Don't update property record since we already did it above
+          )
+          
+          if (!imageServiceResult.success) {
+            console.error('Error adding to property_images table:', imageServiceResult.error)
+            // Don't throw, just log
+          } else {
+            console.log('Property images records created successfully')
+          }
         }
       }
 
+      console.log('Property submission completed successfully')
       setSubmitStatus('success')
       
       // Redirect after successful submission
@@ -240,6 +296,10 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
     } catch (error) {
       console.error('Error saving property:', error)
       setSubmitStatus('error')
+      // Show a more specific error message
+      if (error instanceof Error) {
+        console.error('Error details:', error.message)
+      }
     } finally {
       setIsSubmitting(false)
     }

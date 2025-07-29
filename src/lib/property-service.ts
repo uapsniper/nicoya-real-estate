@@ -1,9 +1,39 @@
 import { supabase, Property } from './supabase'
 import { getPropertyImageUrls } from './supabase-storage'
+import { PropertyImagesService } from './property-images-service'
 
 /**
- * Enhanced property service that integrates with Supabase Storage
+ * Enhanced property service that integrates with Supabase Storage and property_images table
  */
+
+/**
+ * Get images from both Storage and property_images table
+ * @param propertyId - Property ID
+ * @returns Array of unique image URLs
+ */
+async function getAllPropertyImages(propertyId: string): Promise<string[]> {
+  try {
+    // Get images from both sources in parallel
+    const [storageImages, tableImages] = await Promise.all([
+      getPropertyImageUrls(propertyId),
+      PropertyImagesService.getPropertyImages(propertyId)
+    ])
+
+    // Convert table images to URLs
+    const tableImageUrls = tableImages
+      .filter(img => img.image_url)
+      .map(img => img.image_url!)
+
+    // Combine and deduplicate
+    const allImages = [...storageImages, ...tableImageUrls]
+    const uniqueImages = Array.from(new Set(allImages))
+
+    return uniqueImages
+  } catch (error) {
+    console.error('Error getting all property images:', error)
+    return []
+  }
+}
 
 /**
  * Fetch a single property with images from Storage
@@ -28,13 +58,13 @@ export async function getPropertyWithImages(id: string): Promise<Property | null
       return null
     }
 
-    // Fetch images from Storage
-    const storageImages = await getPropertyImageUrls(property.id)
+    // Fetch images from all sources
+    const allImages = await getAllPropertyImages(property.id)
     
-    // Populate images array with Storage URLs
+    // Populate images array with all available URLs
     const propertyWithImages: Property = {
       ...property,
-      images: storageImages.length > 0 ? storageImages : property.images || []
+      images: allImages.length > 0 ? allImages : property.images || []
     }
 
     return propertyWithImages
@@ -112,10 +142,10 @@ export async function getPropertiesWithImages(options: {
     // Fetch images for all properties in parallel
     const propertiesWithImages = await Promise.all(
       properties.map(async (property) => {
-        const storageImages = await getPropertyImageUrls(property.id)
+        const allImages = await getAllPropertyImages(property.id)
         return {
           ...property,
-          images: storageImages.length > 0 ? storageImages : property.images || []
+          images: allImages.length > 0 ? allImages : property.images || []
         }
       })
     )
@@ -168,10 +198,10 @@ export async function searchPropertiesWithImages(searchTerm: string, limit: numb
     // Fetch images for all properties in parallel
     const propertiesWithImages = await Promise.all(
       properties.map(async (property) => {
-        const storageImages = await getPropertyImageUrls(property.id)
+        const allImages = await getAllPropertyImages(property.id)
         return {
           ...property,
-          images: storageImages.length > 0 ? storageImages : property.images || []
+          images: allImages.length > 0 ? allImages : property.images || []
         }
       })
     )
@@ -206,12 +236,12 @@ export async function getPropertyBySlugWithImages(slug: string): Promise<Propert
       return null
     }
 
-    // Fetch images from Storage
-    const storageImages = await getPropertyImageUrls(property.id)
+    // Fetch images from all sources
+    const allImages = await getAllPropertyImages(property.id)
     
     return {
       ...property,
-      images: storageImages.length > 0 ? storageImages : property.images || []
+      images: allImages.length > 0 ? allImages : property.images || []
     }
   } catch (error) {
     console.error('Error in getPropertyBySlugWithImages:', error)
@@ -257,10 +287,10 @@ export async function getRelatedPropertiesWithImages(
     // Fetch images for all properties in parallel
     const propertiesWithImages = await Promise.all(
       properties.map(async (property) => {
-        const storageImages = await getPropertyImageUrls(property.id)
+        const allImages = await getAllPropertyImages(property.id)
         return {
           ...property,
-          images: storageImages.length > 0 ? storageImages : property.images || []
+          images: allImages.length > 0 ? allImages : property.images || []
         }
       })
     )
