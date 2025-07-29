@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getPropertiesWithImages } from '@/lib/property-service'
 import PropertyCard from './PropertyCard'
 import Pagination from './Pagination'
 import Link from 'next/link'
@@ -19,77 +20,27 @@ interface PropertiesGridProps {
 const ITEMS_PER_PAGE = 12
 
 async function getProperties(searchParams: PropertiesGridProps['searchParams']) {
-  if (!supabase) {
-    return { properties: [], total: 0, page: 1, totalPages: 0 }
-  }
-
   try {
     const page = parseInt(searchParams.page || '1')
     const offset = (page - 1) * ITEMS_PER_PAGE
 
-    let query = supabase
-      .from('properties')
-      .select('*', { count: 'exact' })
+    const result = await getPropertiesWithImages({
+      query: searchParams.query,
+      location: searchParams.location,
+      propertyType: searchParams.type,
+      minPrice: searchParams.minPrice ? parseInt(searchParams.minPrice) : undefined,
+      maxPrice: searchParams.maxPrice ? parseInt(searchParams.maxPrice) : undefined,
+      bedrooms: searchParams.bedrooms ? parseInt(searchParams.bedrooms) : undefined,
+      sort: searchParams.sort,
+      limit: ITEMS_PER_PAGE,
+      offset: offset
+    })
 
-    // Apply filters
-    // Text search across multiple fields
-    if (searchParams.query) {
-      query = query.or(`title.ilike.%${searchParams.query}%,description.ilike.%${searchParams.query}%,location.ilike.%${searchParams.query}%`)
-    }
-
-    if (searchParams.location) {
-      query = query.ilike('location', `%${searchParams.location}%`)
-    }
-
-    if (searchParams.type) {
-      query = query.ilike('title', `%${searchParams.type}%`)
-    }
-
-    if (searchParams.minPrice) {
-      query = query.gte('price', parseInt(searchParams.minPrice))
-    }
-
-    if (searchParams.maxPrice) {
-      query = query.lte('price', parseInt(searchParams.maxPrice))
-    }
-
-    if (searchParams.bedrooms) {
-      query = query.gte('bedrooms', parseInt(searchParams.bedrooms))
-    }
-
-    // Apply sorting
-    switch (searchParams.sort) {
-      case 'oldest':
-        query = query.order('created_at', { ascending: true })
-        break
-      case 'price-low':
-        query = query.order('price', { ascending: true })
-        break
-      case 'price-high':
-        query = query.order('price', { ascending: false })
-        break
-      case 'bedrooms':
-        query = query.order('bedrooms', { ascending: false })
-        break
-      default: // 'newest'
-        query = query.order('created_at', { ascending: false })
-    }
-
-    // Apply pagination
-    query = query.range(offset, offset + ITEMS_PER_PAGE - 1)
-
-    const { data: properties, error, count } = await query
-
-    if (error) {
-      console.error('Error fetching properties:', error)
-      return { properties: [], total: 0, page, totalPages: 0 }
-    }
-
-    const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE)
+    const totalPages = Math.ceil(result.total / ITEMS_PER_PAGE)
 
     return {
-      properties: properties || [],
-      total: count || 0,
+      properties: result.properties,
+      total: result.total,
       page,
       totalPages
     }

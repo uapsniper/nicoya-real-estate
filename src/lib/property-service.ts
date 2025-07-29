@@ -88,20 +88,30 @@ export async function getPropertiesWithImages(options: {
   bedrooms?: number
   propertyType?: string
   featured?: boolean
-} = {}): Promise<Property[]> {
+  query?: string
+  sort?: string
+} = {}): Promise<{ properties: Property[]; total: number }> {
   if (!supabase) {
-    return []
+    return { properties: [], total: 0 }
   }
 
   try {
     let query = supabase
       .from('properties')
-      .select('*')
-      .order('created_at', { ascending: false })
+      .select('*', { count: 'exact' })
 
     // Apply filters
+    // Text search across multiple fields
+    if (options.query) {
+      query = query.or(`title.ilike.%${options.query}%,description.ilike.%${options.query}%,location.ilike.%${options.query}%`)
+    }
+
     if (options.location && options.location !== 'All Locations') {
       query = query.ilike('location', `%${options.location}%`)
+    }
+    
+    if (options.propertyType) {
+      query = query.ilike('title', `%${options.propertyType}%`)
     }
     
     if (options.minPrice) {
@@ -120,23 +130,39 @@ export async function getPropertiesWithImages(options: {
       query = query.eq('featured', options.featured)
     }
 
-    if (options.limit) {
+    // Apply sorting
+    switch (options.sort) {
+      case 'oldest':
+        query = query.order('created_at', { ascending: true })
+        break
+      case 'price-low':
+        query = query.order('price', { ascending: true })
+        break
+      case 'price-high':
+        query = query.order('price', { ascending: false })
+        break
+      case 'bedrooms':
+        query = query.order('bedrooms', { ascending: false })
+        break
+      default: // 'newest'
+        query = query.order('created_at', { ascending: false })
+    }
+
+    if (options.offset && options.limit) {
+      query = query.range(options.offset, options.offset + options.limit - 1)
+    } else if (options.limit) {
       query = query.limit(options.limit)
     }
 
-    if (options.offset) {
-      query = query.range(options.offset, options.offset + (options.limit || 10) - 1)
-    }
-
-    const { data: properties, error } = await query
+    const { data: properties, error, count } = await query
 
     if (error) {
       console.error('Error fetching properties:', error)
-      return []
+      return { properties: [], total: 0 }
     }
 
     if (!properties || properties.length === 0) {
-      return []
+      return { properties: [], total: count || 0 }
     }
 
     // Fetch images for all properties in parallel
@@ -150,10 +176,10 @@ export async function getPropertiesWithImages(options: {
       })
     )
 
-    return propertiesWithImages
+    return { properties: propertiesWithImages, total: count || 0 }
   } catch (error) {
     console.error('Error in getPropertiesWithImages:', error)
-    return []
+    return { properties: [], total: 0 }
   }
 }
 
@@ -163,7 +189,8 @@ export async function getPropertiesWithImages(options: {
  * @returns Array of featured properties with images
  */
 export async function getFeaturedPropertiesWithImages(limit: number = 6): Promise<Property[]> {
-  return getPropertiesWithImages({ featured: true, limit })
+  const result = await getPropertiesWithImages({ featured: true, limit })
+  return result.properties
 }
 
 /**
@@ -173,44 +200,8 @@ export async function getFeaturedPropertiesWithImages(limit: number = 6): Promis
  * @returns Array of matching properties with images
  */
 export async function searchPropertiesWithImages(searchTerm: string, limit: number = 20): Promise<Property[]> {
-  if (!supabase) {
-    console.error('Supabase client not initialized')
-    return []
-  }
-
-  try {
-    const { data: properties, error } = await supabase
-      .from('properties')
-      .select('*')
-      .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
-      .limit(limit)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error searching properties:', error)
-      return []
-    }
-
-    if (!properties || properties.length === 0) {
-      return []
-    }
-
-    // Fetch images for all properties in parallel
-    const propertiesWithImages = await Promise.all(
-      properties.map(async (property) => {
-        const allImages = await getAllPropertyImages(property.id)
-        return {
-          ...property,
-          images: allImages.length > 0 ? allImages : property.images || []
-        }
-      })
-    )
-
-    return propertiesWithImages
-  } catch (error) {
-    console.error('Error in searchPropertiesWithImages:', error)
-    return []
-  }
+  const result = await getPropertiesWithImages({ query: searchTerm, limit })
+  return result.properties
 }
 
 /**
