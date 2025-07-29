@@ -199,7 +199,7 @@ export class PropertyImagesService {
           const existingUrls = existingImages.map(img => img.image_url)
           
           // Only add images that don't already exist
-          const newImages = property.images.filter(url => !existingUrls.includes(url))
+          const newImages = property.images.filter((url: string) => !existingUrls.includes(url))
           
           if (newImages.length > 0) {
             const result = await this.addPropertyImages(property.id, newImages, false)
