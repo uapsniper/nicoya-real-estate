@@ -186,7 +186,7 @@ function debounce<T extends (...args: never[]) => unknown>(
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Search by title, description, or location..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600"
             />
             <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
@@ -216,7 +216,7 @@ function debounce<T extends (...args: never[]) => unknown>(
               }
               router.push(`/properties?${params.toString()}`)
             }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -234,7 +234,7 @@ function debounce<T extends (...args: never[]) => unknown>(
           <select
             value={filters.location}
             onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           >
             {locations.map((location) => (
               <option key={location.value} value={location.value}>
@@ -252,7 +252,7 @@ function debounce<T extends (...args: never[]) => unknown>(
           <select
             value={filters.type}
             onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           >
             {propertyTypes.map((type) => (
               <option key={type.value} value={type.value}>
@@ -273,14 +273,14 @@ function debounce<T extends (...args: never[]) => unknown>(
               placeholder="Min"
               value={filters.minPrice}
               onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600"
             />
             <input
               type="number"
               placeholder="Max"
               value={filters.maxPrice}
               onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600"
             />
           </div>
         </div>
@@ -293,7 +293,7 @@ function debounce<T extends (...args: never[]) => unknown>(
           <select
             value={filters.bedrooms}
             onChange={(e) => setFilters({ ...filters, bedrooms: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           >
             {bedroomOptions.map((option) => (
               <option key={option.value} value={option.value}>

@@ -76,6 +76,8 @@ export default function HeroSection() {
             min-height: calc(100vh - 4rem);
             padding-top: 2rem;
             padding-bottom: 2rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
           }
         }
       `}</style>
@@ -103,8 +105,8 @@ export default function HeroSection() {
       )}
 
       {/* Hero Content */}
-      <div className="hero-container hero-main relative z-10 text-center px-3 sm:px-6 lg:px-8 xl:px-12 w-full max-w-7xl mx-auto pt-8 sm:pt-0">
-        <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-4 sm:p-8 lg:p-12 xl:p-16 mx-auto max-w-5xl">
+      <div className="hero-container hero-main relative z-10 text-center px-4 sm:px-6 lg:px-8 xl:px-12 w-full max-w-7xl mx-auto pt-8 sm:pt-0">
+        <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-12 xl:p-16 mx-auto max-w-5xl">
           <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-6 leading-tight text-white drop-shadow-2xl">
             Discover Paradise in{' '}
             <span className="text-blue-300 drop-shadow-lg">Nicoya Coast</span>,{' '}
@@ -134,7 +136,7 @@ export default function HeroSection() {
 
         {/* Key Features */}
         <div className="mt-6 sm:mt-12 lg:mt-16 xl:mt-20 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 text-center max-w-6xl mx-auto">
-          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-black/50 transition-all duration-300">
+          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-8 hover:bg-black/50 transition-all duration-300">
             <div className="w-12 h-12 mx-auto mb-4 bg-blue-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -143,7 +145,7 @@ export default function HeroSection() {
             <h3 className="text-lg font-bold mb-2 text-white">Beachfront Properties</h3>
             <p className="text-gray-100 text-sm leading-relaxed">Direct access to pristine beaches and crystal-clear waters</p>
           </div>
-          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-black/50 transition-all duration-300">
+          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-8 hover:bg-black/50 transition-all duration-300">
             <div className="w-12 h-12 mx-auto mb-4 bg-green-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -152,7 +154,7 @@ export default function HeroSection() {
             <h3 className="text-lg font-bold mb-2 text-white">Nature Reserves</h3>
             <p className="text-gray-100 text-sm leading-relaxed">Close to Cabo Blanco and Manuel Antonio National Parks</p>
           </div>
-          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-black/50 transition-all duration-300">
+          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-8 hover:bg-black/50 transition-all duration-300">
             <div className="w-12 h-12 mx-auto mb-4 bg-amber-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />

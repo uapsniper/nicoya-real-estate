@@ -4,7 +4,8 @@
       "mcp__supabase-mcp-server__get_anon_key",
       "mcp__netlify__netlify-project-services",
       "mcp__netlify__netlify-deploy-services",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "mcp__supabase-mcp-server__execute_sql"
     ]
   },
   "enabledMcpjsonServers": [

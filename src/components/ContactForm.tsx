@@ -115,7 +115,7 @@ export default function ContactForm() {
               type="text"
               id="name"
               {...register('name')}
-              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 ${
                 errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
               }`}
               placeholder="Your full name"
@@ -133,7 +133,7 @@ export default function ContactForm() {
               type="email"
               id="email"
               {...register('email')}
-              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 ${
                 errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
               }`}
               placeholder="your.email@example.com"
@@ -153,7 +153,7 @@ export default function ContactForm() {
               type="tel"
               id="phone"
               {...register('phone')}
-              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 ${
                 errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
               }`}
               placeholder="+1 (555) 123-4567"
@@ -170,7 +170,7 @@ export default function ContactForm() {
             <select
               id="inquiryType"
               {...register('inquiryType')}
-              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 ${
                 errors.inquiryType ? 'border-red-300 bg-red-50' : 'border-gray-300'
               }`}
             >
@@ -194,7 +194,7 @@ export default function ContactForm() {
             type="text"
             id="subject"
             {...register('subject')}
-            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 ${
               errors.subject ? 'border-red-300 bg-red-50' : 'border-gray-300'
             }`}
             placeholder="Brief description of your inquiry"
@@ -212,7 +212,7 @@ export default function ContactForm() {
             id="message"
             {...register('message')}
             rows={6}
-            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical ${
+            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical placeholder:text-gray-600 ${
               errors.message ? 'border-red-300 bg-red-50' : 'border-gray-300'
             }`}
             placeholder="Please provide details about your inquiry, including any specific requirements or questions you may have..."

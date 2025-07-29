@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { generateSlug } from '@/lib/utils'
 import { Property } from '@/lib/supabase'
-import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, XMarkIcon, PhotoIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline'
+import { uploadMultiplePropertyImages, deletePropertyImage, validateImageFile } from '@/lib/image-upload'
 
 interface PropertyFormProps {
   property?: Property
@@ -32,7 +33,9 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
   })
 
   const [newAmenity, setNewAmenity] = useState('')
-  const [newImageUrl, setNewImageUrl] = useState('')
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [uploadingImages, setUploadingImages] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<string>('')
 
   const locations = [
     'Cabuya, Peninsula de Nicoya, Costa Rica',
@@ -95,17 +98,64 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
     }
   }
 
-  const addImage = () => {
-    if (newImageUrl.trim() && !formData.images.includes(newImageUrl.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, newImageUrl.trim()]
-      }))
-      setNewImageUrl('')
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    
+    // Validate files
+    const validFiles = files.filter(file => {
+      const validation = validateImageFile(file)
+      if (!validation.isValid) {
+        console.error(`Invalid file ${file.name}: ${validation.error}`)
+        return false
+      }
+      return true
+    })
+
+    setSelectedFiles(validFiles)
+  }
+
+  const uploadImages = async (propertyId: string) => {
+    if (selectedFiles.length === 0) return []
+
+    setUploadingImages(true)
+    setUploadProgress('Uploading images...')
+
+    try {
+      const uploadResults = await uploadMultiplePropertyImages(selectedFiles, propertyId)
+      
+      const successfulUploads = uploadResults
+        .filter(result => result.success && result.imageUrl)
+        .map(result => result.imageUrl!)
+
+      const failedUploads = uploadResults.filter(result => !result.success)
+      
+      if (failedUploads.length > 0) {
+        console.error('Some uploads failed:', failedUploads)
+      }
+
+      setUploadProgress(`Uploaded ${successfulUploads.length} images successfully`)
+      setSelectedFiles([]) // Clear selected files after upload
+      
+      return successfulUploads
+    } catch (error) {
+      console.error('Error uploading images:', error)
+      setUploadProgress('Error uploading images')
+      return []
+    } finally {
+      setUploadingImages(false)
+      setTimeout(() => setUploadProgress(''), 3000)
     }
   }
 
-  const removeImage = (imageToRemove: string) => {
+  const removeImage = async (imageToRemove: string) => {
+    // If it's a Supabase storage URL, delete it from storage
+    if (imageToRemove.includes('supabase.co/storage')) {
+      const deleteResult = await deletePropertyImage(imageToRemove)
+      if (!deleteResult.success) {
+        console.error('Failed to delete image from storage:', deleteResult.error)
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
       images: prev.images.filter(image => image !== imageToRemove)
@@ -118,8 +168,15 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
     setSubmitStatus('idle')
 
     try {
+      if (!supabase) {
+        throw new Error('Database connection not available')
+      }
+
       const slug = generateSlug(formData.title)
-      
+      let propertyId = property?.id
+      let uploadedImageUrls: string[] = []
+
+      // First, create or update the property to get an ID
       const propertyData = {
         title: formData.title,
         price: parseFloat(formData.price),
@@ -131,32 +188,46 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
         description: formData.description,
         featured: formData.featured,
         amenities: formData.amenities,
-        images: formData.images,
+        images: formData.images, // Will be updated with new images
         slug: slug,
         updated_at: new Date().toISOString()
       }
 
-      let error
-
-      if (!supabase) {
-        throw new Error('Database connection not available')
-      }
-
       if (isEditing && property) {
+        // Update existing property
         const { error: updateError } = await supabase
           .from('properties')
           .update(propertyData)
           .eq('id', property.id)
-        error = updateError
+        
+        if (updateError) throw updateError
+        propertyId = property.id
       } else {
-        const { error: insertError } = await supabase
+        // Create new property
+        const { data: newProperty, error: insertError } = await supabase
           .from('properties')
           .insert([propertyData])
-        error = insertError
+          .select('id')
+          .single()
+        
+        if (insertError) throw insertError
+        propertyId = newProperty.id
       }
 
-      if (error) {
-        throw error
+      // Upload new images if any are selected
+      if (selectedFiles.length > 0 && propertyId) {
+        uploadedImageUrls = await uploadImages(propertyId)
+        
+        // Update the property with the new image URLs
+        const allImages = [...formData.images, ...uploadedImageUrls]
+        const { error: imageUpdateError } = await supabase
+          .from('properties')
+          .update({ images: allImages })
+          .eq('id', propertyId)
+        
+        if (imageUpdateError) {
+          console.error('Error updating images:', imageUpdateError)
+        }
       }
 
       setSubmitStatus('success')
@@ -218,7 +289,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 text-gray-900"
                 placeholder="e.g., Charming Twin Homes in Cabuya – Walk to the Beach"
               />
             </div>
@@ -236,7 +307,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 required
                 min="0"
                 step="1000"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 text-gray-900"
                 placeholder="975000"
               />
             </div>
@@ -251,7 +322,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 value={formData.location}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 text-gray-900"
               >
                 <option value="">Select a location</option>
                 {locations.map((location) => (
@@ -280,7 +351,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 onChange={handleInputChange}
                 required
                 min="1"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 text-gray-900"
                 placeholder="2998"
               />
             </div>
@@ -296,7 +367,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 value={formData.construction_size}
                 onChange={handleInputChange}
                 min="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 text-gray-900"
                 placeholder="200"
               />
             </div>
@@ -313,7 +384,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 onChange={handleInputChange}
                 required
                 min="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 text-gray-900"
                 placeholder="2"
               />
             </div>
@@ -330,7 +401,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 onChange={handleInputChange}
                 required
                 min="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600 text-gray-900"
                 placeholder="2"
               />
             </div>
@@ -392,7 +463,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
                 type="text"
                 value={newAmenity}
                 onChange={(e) => setNewAmenity(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-600"
                 placeholder="Enter custom amenity"
               />
               <button
@@ -436,46 +507,110 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-4">Property Images</h3>
           
-          <div className="mb-4">
+          {/* File Upload */}
+          <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Add Image URL
+              Upload Images
             </label>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://example.com/image.jpg"
-              />
-              <button
-                type="button"
-                onClick={addImage}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                <PlusIcon className="h-4 w-4" />
-              </button>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-400 transition-colors">
+              <div className="text-center">
+                <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="mt-4">
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <span className="mt-2 block text-sm font-medium text-gray-900">
+                      Select images to upload
+                    </span>
+                    <input
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      className="sr-only"
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      disabled={uploadingImages}
+                    />
+                    <div className="mt-2 text-xs text-gray-500">
+                      PNG, JPG, WebP up to 10MB each
+                    </div>
+                  </label>
+                </div>
+              </div>
             </div>
+
+            {/* Selected Files Preview */}
+            {selectedFiles.length > 0 && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Selected Files ({selectedFiles.length})
+                </label>
+                <div className="space-y-2">
+                  {selectedFiles.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-md">
+                      <div className="flex items-center">
+                        <PhotoIcon className="h-5 w-5 text-blue-500 mr-2" />
+                        <span className="text-sm text-gray-700">
+                          {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                      </div>
+                      {!uploadingImages && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedFiles(files => files.filter((_, i) => i !== index))}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <XMarkIcon className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Upload Progress */}
+                {uploadProgress && (
+                  <div className="mt-2 p-2 bg-gray-100 rounded-md">
+                    <div className="flex items-center">
+                      {uploadingImages && (
+                        <CloudArrowUpIcon className="h-4 w-4 text-blue-500 mr-2 animate-pulse" />
+                      )}
+                      <span className="text-sm text-gray-600">{uploadProgress}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
+          {/* Current Images */}
           {formData.images.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Property Images ({formData.images.length})
+                Current Property Images ({formData.images.length})
               </label>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {formData.images.map((image, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                    <span className="text-sm text-gray-700 truncate flex-1 mr-4">
-                      {image}
-                    </span>
+                  <div key={index} className="relative group">
+                    <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg overflow-hidden">
+                      <img
+                        src={image}
+                        alt={`Property image ${index + 1}`}
+                        className="w-full h-32 object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNNCAzSDE2QTE3IDE3IDAgMCAxIDIwIDNWMTZBMSAxIDAgMCAxIDIwIDIwSDRBMSAxIDAgMCAxIDMgMjBWNEExIDEgMCAwIDEgNCAzWiIgZmlsbD0iI0Y5RkFGQiIgc3Ryb2tlPSIjRDFENUREIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cGF0aCBkPSJNOSAxMUwxMiA4TDE5IDEyTDE5IDE2SDEySDUiIGZpbGw9IiNGM0Y0RjYiLz4KICA8Y2lyY2xlIGN4PSI4LjUiIGN5PSI4LjUiIHI9IjEuNSIgZmlsbD0iI0QxRDVEQiIvPgo8L3N2Zz4K'
+                        }}
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeImage(image)}
-                      className="text-red-600 hover:text-red-800"
+                      className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
+                    <div className="mt-1 text-xs text-gray-500 truncate">
+                      Image {index + 1}
+                    </div>
                   </div>
                 ))}
               </div>
