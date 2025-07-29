@@ -200,15 +200,15 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
       // Test database connection before proceeding
       console.log('Testing database connection...')
       try {
-        const { data: testData, error: testError } = await Promise.race([
+        const result = await Promise.race([
           supabase.from('properties').select('id').limit(1),
-          new Promise((_, reject) => 
+          new Promise<never>((_, reject) => 
             setTimeout(() => reject(new Error('Connection test timeout')), 5000)
           )
-        ]) as any
+        ])
         
-        if (testError) {
-          throw new Error(`Database connection test failed: ${testError.message}`)
+        if (result.error) {
+          throw new Error(`Database connection test failed: ${result.error.message}`)
         }
         console.log('Database connection test passed')
       } catch (error) {
@@ -277,10 +277,10 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
             .eq('id', property.id)
             .select('id')
             .single(),
-          new Promise((_, reject) => 
+          new Promise<never>((_, reject) => 
             setTimeout(() => reject(new Error('Property update query timed out after 15 seconds')), 15000)
           )
-        ]) as any
+        ])
         
         console.log('Update operation completed')
         
