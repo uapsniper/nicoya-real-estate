@@ -4,12 +4,21 @@ import PropertyCard from './PropertyCard'
 
 export default async function FeaturedProperties() {
   // Fetch featured properties directly from database
-  const { data: properties } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('featured', true)
-    .order('created_at', { ascending: false })
-    .limit(6)
+  let properties = null
+  
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('featured', true)
+        .order('created_at', { ascending: false })
+        .limit(6)
+      properties = data
+    } catch (error) {
+      console.error('Error fetching featured properties:', error)
+    }
+  }
 
   return (
     <section className="py-16 bg-white">

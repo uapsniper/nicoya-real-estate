@@ -19,6 +19,10 @@ interface PropertiesGridProps {
 const ITEMS_PER_PAGE = 12
 
 async function getProperties(searchParams: PropertiesGridProps['searchParams']) {
+  if (!supabase) {
+    return { properties: [], total: 0, page: 1, totalPages: 0 }
+  }
+
   try {
     const page = parseInt(searchParams.page || '1')
     const offset = (page - 1) * ITEMS_PER_PAGE

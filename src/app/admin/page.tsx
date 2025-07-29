@@ -4,6 +4,16 @@ import Link from 'next/link'
 import AdminProtection from '@/components/auth/AdminProtection'
 
 async function getDashboardStats() {
+  if (!supabase) {
+    return {
+      totalProperties: 0,
+      featuredProperties: 0,
+      totalInquiries: 0,
+      recentInquiries: 0,
+      averagePrice: 0
+    }
+  }
+
   try {
     // Get total properties count
     const { count: totalProperties } = await supabase
@@ -59,6 +69,10 @@ async function getDashboardStats() {
 }
 
 async function getRecentProperties() {
+  if (!supabase) {
+    return []
+  }
+
   try {
     const { data: properties, error } = await supabase
       .from('properties')
@@ -79,6 +93,10 @@ async function getRecentProperties() {
 }
 
 async function getRecentInquiries() {
+  if (!supabase) {
+    return []
+  }
+
   try {
     const { data: inquiries, error } = await supabase
       .from('contact_inquiries')
