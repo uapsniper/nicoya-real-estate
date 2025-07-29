@@ -143,6 +143,11 @@ export async function getFeaturedPropertiesWithImages(limit: number = 6): Promis
  * @returns Array of matching properties with images
  */
 export async function searchPropertiesWithImages(searchTerm: string, limit: number = 20): Promise<Property[]> {
+  if (!supabase) {
+    console.error('Supabase client not initialized')
+    return []
+  }
+
   try {
     const { data: properties, error } = await supabase
       .from('properties')
@@ -184,6 +189,11 @@ export async function searchPropertiesWithImages(searchTerm: string, limit: numb
  * @returns Property with images or null
  */
 export async function getPropertyBySlugWithImages(slug: string): Promise<Property | null> {
+  if (!supabase) {
+    console.error('Supabase client not initialized')
+    return null
+  }
+
   try {
     const { data: property, error } = await supabase
       .from('properties')
@@ -221,6 +231,11 @@ export async function getRelatedPropertiesWithImages(
   location: string, 
   limit: number = 4
 ): Promise<Property[]> {
+  if (!supabase) {
+    console.error('Supabase client not initialized')
+    return []
+  }
+
   try {
     const { data: properties, error } = await supabase
       .from('properties')

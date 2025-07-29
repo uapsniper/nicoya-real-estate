@@ -3,6 +3,11 @@ import { supabase } from '@/lib/supabase'
 import { samplePropertyImages } from '@/lib/placeholder-images'
 
 export async function updatePropertyImages() {
+  if (!supabase) {
+    console.error('Supabase client not initialized')
+    return
+  }
+
   try {
     // Get all properties
     const { data: properties, error: fetchError } = await supabase
@@ -36,7 +41,7 @@ export async function updatePropertyImages() {
       }
 
       // Update the property with images
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabase!
         .from('properties')
         .update({ images: propertyImages })
         .eq('id', property.id)

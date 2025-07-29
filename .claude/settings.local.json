@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__supabase-mcp-server__get_anon_key",
+      "mcp__netlify__netlify-project-services",
+      "mcp__netlify__netlify-deploy-services",
+      "Bash(npm run build:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "brave-search",
+    "airtable",
+    "make",
+    "puppeteer",
+    "sequential-thinking",
+    "supabase-mcp-server",
+    "netlify",
+    "github-mcp-server"
+  ]
+}
