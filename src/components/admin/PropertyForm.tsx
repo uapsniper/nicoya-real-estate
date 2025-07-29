@@ -197,6 +197,25 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
         throw new Error('Database connection not available')
       }
 
+      // Test database connection before proceeding
+      console.log('Testing database connection...')
+      try {
+        const { data: testData, error: testError } = await Promise.race([
+          supabase.from('properties').select('id').limit(1),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Connection test timeout')), 5000)
+          )
+        ]) as any
+        
+        if (testError) {
+          throw new Error(`Database connection test failed: ${testError.message}`)
+        }
+        console.log('Database connection test passed')
+      } catch (error) {
+        console.error('Database connection test failed:', error)
+        throw new Error('Database connection is not working properly')
+      }
+
       // Validate required fields
       if (!formData.title.trim()) {
         throw new Error('Property title is required')
@@ -237,29 +256,45 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
         updated_at: new Date().toISOString()
       }
 
+      // Log data validation
+      console.log('Validating property data...')
+      console.log('- Title length:', formData.title.length)
+      console.log('- Description length:', formData.description.length)
+      console.log('- Amenities count:', formData.amenities.length)
+      console.log('- Images count:', formData.images.length)
+
       console.log('Property data to submit:', propertyData)
 
       if (isEditing && property) {
         console.log('Updating existing property:', property.id)
-        // Update existing property with response verification
-        const { data: updatedProperty, error: updateError } = await supabase
-          .from('properties')
-          .update(propertyData)
-          .eq('id', property.id)
-          .select('id')
-          .single()
+        console.log('Property data size:', JSON.stringify(propertyData).length, 'bytes')
         
-        if (updateError) {
-          console.error('Update error:', updateError)
-          throw new Error(`Failed to update property: ${updateError.message}`)
+        // Add timeout specifically for the update operation
+        const updateResult = await Promise.race([
+          supabase
+            .from('properties')
+            .update(propertyData)
+            .eq('id', property.id)
+            .select('id')
+            .single(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Property update query timed out after 15 seconds')), 15000)
+          )
+        ]) as any
+        
+        console.log('Update operation completed')
+        
+        if (updateResult.error) {
+          console.error('Update error:', updateResult.error)
+          throw new Error(`Failed to update property: ${updateResult.error.message}`)
         }
         
-        if (!updatedProperty) {
+        if (!updateResult.data) {
           throw new Error('Property update returned no data - property may not exist')
         }
         
         propertyId = property.id
-        console.log('Property updated successfully, ID:', updatedProperty.id)
+        console.log('Property updated successfully, ID:', updateResult.data.id)
       } else {
         console.log('Creating new property...')
         // Create new property
