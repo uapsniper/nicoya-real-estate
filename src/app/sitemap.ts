@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next'
-import { supabase } from '@/lib/supabase'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nicoya-coastal-homes.netlify.app'
 
   // Static pages
   const staticPages = [
@@ -32,25 +31,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Dynamic property pages
+  // Dynamic property pages - only generate if we have Supabase credentials
   let propertyPages: MetadataRoute.Sitemap = []
   
-  try {
-    const { data: properties } = await supabase
-      .from('properties')
-      .select('slug, updated_at')
-      .order('updated_at', { ascending: false })
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    try {
+      const { createClient } = await import('@supabase/supabase-js')
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      )
+      
+      const { data: properties } = await supabase
+        .from('properties')
+        .select('slug, updated_at')
+        .order('updated_at', { ascending: false })
 
-    if (properties) {
-      propertyPages = properties.map((property) => ({
-        url: `${baseUrl}/properties/${property.slug}`,
-        lastModified: new Date(property.updated_at),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      }))
+      if (properties) {
+        propertyPages = properties.map((property) => ({
+          url: `${baseUrl}/properties/${property.slug}`,
+          lastModified: new Date(property.updated_at),
+          changeFrequency: 'weekly' as const,
+          priority: 0.8,
+        }))
+      }
+    } catch (error) {
+      console.error('Error generating sitemap for properties:', error)
     }
-  } catch (error) {
-    console.error('Error generating sitemap for properties:', error)
   }
 
   return [...staticPages, ...propertyPages]
