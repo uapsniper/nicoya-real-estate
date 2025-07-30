@@ -199,16 +199,37 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
 
       console.log('Database client available:', !!supabase)
       
-      // Check authentication status
+      // Check and refresh authentication status
       if (supabase) {
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-        console.log('Authentication status:', {
-          user: user ? { id: user.id, email: user.email } : null,
-          error: authError
-        })
+        console.log('Checking authentication...')
+        let user = null
         
-        if (!user) {
-          throw new Error('User is not authenticated. Please log in again.')
+        try {
+          // First try to get current user
+          const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser()
+          
+          if (authError || !currentUser) {
+            console.log('No valid session, attempting to refresh...')
+            // Try to refresh the session
+            const { data: { user: refreshedUser }, error: refreshError } = await supabase.auth.refreshSession()
+            
+            if (refreshError || !refreshedUser) {
+              console.error('Session refresh failed:', refreshError)
+              throw new Error('Authentication session expired. Please log out and log in again.')
+            }
+            
+            user = refreshedUser
+            console.log('Session refreshed successfully')
+          } else {
+            user = currentUser
+            console.log('Valid session found')
+          }
+          
+          console.log('Authenticated user:', { id: user.id, email: user.email })
+          
+        } catch (error) {
+          console.error('Authentication check failed:', error)
+          throw new Error('Authentication failed. Please log out and log in again.')
         }
       }
 
