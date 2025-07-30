@@ -3,13 +3,23 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-let supabase: SupabaseClient | null = null
+// Singleton pattern to prevent multiple GoTrueClient instances
+let supabaseInstance: SupabaseClient | null = null
 
-if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey)
+function getSupabaseClient(): SupabaseClient | null {
+  if (!supabaseInstance && supabaseUrl && supabaseAnonKey) {
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        storageKey: 'nicoya-real-estate-auth',
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      },
+    })
+  }
+  return supabaseInstance
 }
 
-export { supabase }
+export const supabase = getSupabaseClient()
 
 // Types for our database
 export interface Property {

@@ -197,24 +197,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
         throw new Error('Database connection not available')
       }
 
-      // Test database connection before proceeding
-      console.log('Testing database connection...')
-      try {
-        const result = await Promise.race([
-          supabase.from('properties').select('id').limit(1),
-          new Promise<never>((_, reject) => 
-            setTimeout(() => reject(new Error('Connection test timeout')), 5000)
-          )
-        ])
-        
-        if (result.error) {
-          throw new Error(`Database connection test failed: ${result.error.message}`)
-        }
-        console.log('Database connection test passed')
-      } catch (error) {
-        console.error('Database connection test failed:', error)
-        throw new Error('Database connection is not working properly')
-      }
+      console.log('Database client available:', !!supabase)
 
       // Validate required fields
       if (!formData.title.trim()) {
