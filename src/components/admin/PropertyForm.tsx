@@ -257,9 +257,7 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
           supabase
             .from('properties')
             .update(propertyData)
-            .eq('id', property.id)
-            .select('id')
-            .single(),
+            .eq('id', property.id),
           new Promise<never>((_, reject) => 
             setTimeout(() => reject(new Error('Property update query timed out after 15 seconds')), 15000)
           )
@@ -272,12 +270,8 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
           throw new Error(`Failed to update property: ${updateResult.error.message}`)
         }
         
-        if (!updateResult.data) {
-          throw new Error('Property update returned no data - property may not exist')
-        }
-        
         propertyId = property.id
-        console.log('Property updated successfully, ID:', updateResult.data.id)
+        console.log('Property updated successfully, ID:', property.id)
       } else {
         console.log('Creating new property...')
         // Create new property
