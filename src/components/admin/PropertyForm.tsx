@@ -198,6 +198,19 @@ export default function PropertyForm({ property, isEditing = false }: PropertyFo
       }
 
       console.log('Database client available:', !!supabase)
+      
+      // Check authentication status
+      if (supabase) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        console.log('Authentication status:', {
+          user: user ? { id: user.id, email: user.email } : null,
+          error: authError
+        })
+        
+        if (!user) {
+          throw new Error('User is not authenticated. Please log in again.')
+        }
+      }
 
       // Validate required fields
       if (!formData.title.trim()) {
